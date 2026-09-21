@@ -1,0 +1,10 @@
+{
+  "deploy": {
+    "database": true
+  },
+  "local": {
+    "env": {
+      "HOST_EMAILS": []
+    }
+  }
+}

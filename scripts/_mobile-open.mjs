@@ -1,0 +1,16 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch({ args: ["--no-sandbox"] });
+const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+await page.goto("http://127.0.0.1:8080/", { waitUntil: "networkidle" });
+await page.getByRole("button", { name: "Open invitation" }).click({ force: true });
+await page.waitForTimeout(2800);
+await page.screenshot({ path: "/workspace/screenshots/mobile-hero.png" });
+await page.evaluate(() => document.querySelector(".garden-route")?.scrollIntoView({ block: "center" }));
+await page.waitForTimeout(400);
+await page.screenshot({ path: "/workspace/screenshots/mobile-details.png" });
+await page.evaluate(() => document.getElementById("rsvp")?.scrollIntoView({ block: "start" }));
+await page.waitForTimeout(400);
+await page.screenshot({ path: "/workspace/screenshots/mobile-rsvp.png" });
+const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2);
+console.log(JSON.stringify({ overflow, title: await page.title() }));
+await browser.close();
