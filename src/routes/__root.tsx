@@ -4,6 +4,9 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { event } from "@/lib/event";
 import appCss from "../styles.css?url";
 
+const siteUrl = "https://asuna-birthday-invitation.vercel.app";
+const shareImageUrl = `${siteUrl}/invitation/hero.jpg`;
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -12,6 +15,13 @@ export const Route = createRootRoute({
       { title: event.pageTitle },
       { name: "description", content: event.pageDescription },
       { name: "theme-color", content: "#f8d8ee" },
+      { property: "og:title", content: "Iria Asuna's Birthday Invitation" },
+      { property: "og:description", content: "You're invited to a magical fairy garden celebration! ✨🌸" },
+      { property: "og:image", content: shareImageUrl },
+      { property: "og:image:alt", content: "Iria Asuna's fairy garden birthday invitation" },
+      { property: "og:url", content: siteUrl },
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Iria Asuna's Birthday Invitation" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
