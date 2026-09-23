@@ -10,9 +10,10 @@ type GardenAudio = {
   isPlaying: () => boolean;
 };
 
-export function createGardenAudio(): GardenAudio {
+export function createGardenAudio(externalAudioUrl?: string): GardenAudio {
   let ctx: AudioContext | null = null;
   let master: GainNode | null = null;
+  let mediaElement: HTMLAudioElement | null = null;
   let nodes: AudioNode[] = [];
   let timers: number[] = [];
   let playing = false;
@@ -83,6 +84,48 @@ export function createGardenAudio(): GardenAudio {
     if (!AC) return;
     ctx = ctx ?? new AC();
     if (ctx.state === "suspended") await ctx.resume();
+
+    // Try external audio first (public/invitation/garden-music.mp3 by default)
+    const url = externalAudioUrl ?? "/invitation/garden-music.mp3";
+    // Create the media element synchronously so `play()` runs inside the
+    // user gesture call stack (avoids autoplay being blocked by awaiting network).
+    try {
+      mediaElement = new Audio(url);
+      mediaElement.loop = true;
+      mediaElement.preload = "auto";
+      mediaElement.crossOrigin = "anonymous";
+
+      master = ctx.createGain();
+      master.gain.value = 0.9;
+      master.connect(ctx.destination);
+
+      const src = ctx.createMediaElementSource(mediaElement);
+      src.connect(master);
+      nodes.push(src);
+
+      // Play (resume context first if needed). Keep this call synchronous
+      // before any await so browsers treat it as a user-initiated play.
+      if (ctx.state === "suspended") {
+        // resume can be async; attempt resume but do not await before play
+        void ctx.resume();
+      }
+      try {
+        // play() may still fail on some platforms; ignore failures and fall
+        // back to the generative score below.
+        const p = mediaElement.play();
+        // If a promise is returned, swallow errors asynchronously.
+        if (p && typeof p.then === "function") p.catch(() => {});
+      } catch {
+        // ignore
+      }
+
+      playing = true;
+      return;
+    } catch (e) {
+      // fall back to generative audio below
+    }
+
+    // Fallback: generative WebAudio score
     master = ctx.createGain();
     master.gain.value = 0.9;
     master.connect(ctx.destination);
@@ -95,6 +138,14 @@ export function createGardenAudio(): GardenAudio {
   function stop() {
     playing = false;
     clear();
+    if (mediaElement) {
+      try {
+        mediaElement.pause();
+        mediaElement.currentTime = 0;
+      } catch {}
+      mediaElement = null;
+    }
+
     if (master && ctx) {
       try {
         master.disconnect();

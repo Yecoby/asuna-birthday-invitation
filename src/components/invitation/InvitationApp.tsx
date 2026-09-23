@@ -198,7 +198,10 @@ export function InvitationApp() {
   useSceneActivity(opened);
 
   useEffect(() => {
-    audio.current = createGardenAudio();
+    // Use the uploaded MP3 placed under public/invitation/
+    audio.current = createGardenAudio(
+      '/invitation/02. What If There Was Pink - The Pirate Fairy Soundtrack - (320 Kbps) (1).mp3'
+    );
     return () => audio.current?.stop();
   }, []);
 
@@ -428,6 +431,92 @@ export function InvitationApp() {
           </section>
 
           <section className="details garden-path-scene motion-scene" id="details">
+            {/* Fairy-garden atmosphere. Purely decorative and confined to the
+                edges/corners so the centre content stays clean and readable. */}
+            <div className="fae-bg" aria-hidden="true">
+              {["tl", "tr", "bl", "br"].map((pos) => (
+                <span key={`bloom-${pos}`} className={`fae-bloom fae-bloom--${pos}`}>
+                  <svg viewBox="0 0 200 200" focusable="false">
+                    {/* Large five-petal blossom */}
+                    <g transform="translate(62 58)">
+                      <g fill="#ffd3e6">
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(72)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(144)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(216)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(288)" />
+                      </g>
+                      <circle r="7.5" fill="#fff2c4" />
+                      <circle r="3" fill="#ffd77a" />
+                    </g>
+                    {/* Lilac blossom */}
+                    <g transform="translate(132 84) scale(0.82)">
+                      <g fill="#ddcdf7">
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(72)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(144)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(216)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(288)" />
+                      </g>
+                      <circle r="7.5" fill="#fff6de" />
+                      <circle r="3" fill="#e8c489" />
+                    </g>
+                    {/* Small blue blossom */}
+                    <g transform="translate(88 140) scale(0.62)">
+                      <g fill="#cfe2ff">
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(72)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(144)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(216)" />
+                        <ellipse cx="0" cy="-20" rx="12" ry="20" transform="rotate(288)" />
+                      </g>
+                      <circle r="7.5" fill="#fffaf0" />
+                    </g>
+                    {/* Leaves tucked behind the blooms */}
+                    <g fill="#b9dcaa" opacity="0.9">
+                      <ellipse cx="34" cy="112" rx="8" ry="17" transform="rotate(-38 34 112)" />
+                      <ellipse cx="168" cy="140" rx="7" ry="15" transform="rotate(34 168 140)" />
+                      <ellipse cx="120" cy="36" rx="7" ry="14" transform="rotate(22 120 36)" />
+                    </g>
+                  </svg>
+                </span>
+              ))}
+              <span className="fae-vine fae-vine--left" />
+              <span className="fae-vine fae-vine--right" />
+              <span className="fae-leaves fae-leaves--top" />
+              <span className="fae-leaves fae-leaves--bottom" />
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <span key={`moth-${n}`} className={`fae-moth fae-moth--${n}`}>
+                  <svg viewBox="0 0 100 76" focusable="false">
+                    <path
+                      d="M50 40C38 22 20 12 8 18c-9 5-6 24 8 31 8 4 22 3 34-9Z"
+                      fill="currentColor"
+                      opacity="0.92"
+                    />
+                    <path
+                      d="M50 40c12-18 30-28 42-22 9 5 6 24-8 31-8 4-22 3-34-9Z"
+                      fill="currentColor"
+                      opacity="0.92"
+                    />
+                    <path
+                      d="M50 44c-8 12-20 20-29 17-7-3-5-15 6-20 6-3 15-2 23 3Z"
+                      fill="currentColor"
+                      opacity="0.75"
+                    />
+                    <path
+                      d="M50 44c8 12 20 20 29 17 7-3 5-15-6-20-6-3-15-2-23 3Z"
+                      fill="currentColor"
+                      opacity="0.75"
+                    />
+                    <path d="M50 34v18" stroke="#6b4a72" strokeWidth="2.4" strokeLinecap="round" />
+                  </svg>
+                </span>
+              ))}
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                <span key={`spark-${n}`} className={`fae-spark fae-spark--${n}`} />
+              ))}
+            </div>
+
             <div className="section-heading reveal">
               <p className="eyebrow">{event.detailsEyebrow}</p>
               <h2>{event.detailsTitle}</h2>
@@ -631,23 +720,35 @@ export function InvitationApp() {
 
           <section className="venue-scene motion-scene" id="venue" aria-labelledby="venueTitle">
             <div className="venue-scene__image" data-parallax data-parallax-speed="0.09" aria-hidden="true" />
-            <div className="venue-scene__copy reveal">
-              <p className="eyebrow">{event.venueEyebrow}</p>
-              <h2 id="venueTitle">{event.venueName}</h2>
-              <p>{event.venueCity}</p>
+            <div className="venue-scene__inner">
+              <p className="eyebrow venue-scene__eyebrow reveal">{event.venueEyebrow}</p>
+              <div className="venue-card reveal">
+                <span className="venue-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                    <path
+                      d="M12 21.5s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12" cy="10.2" r="2.6" stroke="currentColor" strokeWidth="1.6" />
+                  </svg>
+                </span>
+                <h2 className="venue-card__name" id="venueTitle">
+                  {event.venueName}
+                </h2>
+                <p className="venue-card__city">{event.venueCity}</p>
+                <span className="venue-card__divider" aria-hidden="true" />
+                <a
+                  className="fg-btn fg-btn--solid venue-card__button"
+                  href={event.mapsLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {event.mapsButton}
+                </a>
+              </div>
             </div>
-            <div className="map-shell reveal">
-              <iframe
-                title={`Map to ${event.venueName}`}
-                src={event.mapsEmbed}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
-            </div>
-            <a className="fg-btn fg-btn--solid reveal" href={event.mapsLink} target="_blank" rel="noopener noreferrer">
-              {event.mapsButton}
-            </a>
           </section>
 
           <section className="dress-code motion-scene" id="dressCode" aria-labelledby="dressCodeTitle">

@@ -25,28 +25,28 @@ export type GalleryItem = {
 };
 
 export const event = {
-  childFullName: "Iria Asuna",
+  childFullName: "Iria Asuna D. Maramara",
   childFirstName: "Iria",
   childNickname: "Iria",
   sealLetter: "I",
   ageWord: "One",
   headline: "Turns One",
   themeName: "Iria’s First Fairy Garden",
-  pageTitle: "Iria Asuna Turns One",
+  pageTitle: "Iria Asuna D. Maramara Turns One",
   pageDescription:
     "You are invited to Iria Asuna’s first birthday — a fairy garden afternoon of tiny wonders, lanterns, and love.",
 
-  /* Saturday, 17 October 2026, 3:00 PM, Philippines */
-  dateISO: "2026-10-17T15:00:00+08:00",
-  dateLabel: "October 17, 2026",
-  dayLabel: "Saturday",
-  timeLabel: "3:00 PM",
+  /* Tuesday Novermber, 04, 3:00 PM, Philippines */
+  dateISO: "2026-11-03T15:00:00+08:00",
+  dateLabel: "November 03, 2026",
+  dayLabel: "Tuesday",
+  timeLabel: "5:00 PM",
 
-  venueName: "Grotto Vista Resort",
-  venueCity: "San Jose del Monte, Bulacan",
-  mapsLink: "https://maps.google.com/?q=Grotto%20Vista%20Resort",
-  mapsEmbed:
-    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3857.592075915572!2d121.0614254!3d14.791992100000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397af96ba8e1f4d%3A0x9317d3a8a678c1fb!2sGrotto%20Vista%20Resort!5e0!3m2!1sen!2sph!4v1781883824732!5m2!1sen!2sph",
+  venueName: "Bayfront Hotel",
+  venueCity: "Cebu City",
+  mapsLink: "https://www.google.com/maps/place/Bayfront+Hotel+Cebu+North+Reclamation/@10.3118471,123.9186312,17z/data=!3m1!4b1!4m9!3m8!1s0x33a99972f04ee017:0x239e29fd87e52e92!5m2!4m1!1i2!8m2!3d10.3118418!4d123.9212061!16s%2Fg%2F1pp2wygm7?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
+
+  mapsEmbed: "https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=Bayfront+Hotel+Cebu+North+Reclamation,Cebu+City,Philippines",
 
   envelopeEyebrow: "You’re Invited",
   openingAssist: "A magical invitation is waiting.",

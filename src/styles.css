@@ -487,10 +487,9 @@
   position: absolute;
   inset: -6%;
   z-index: -5;
-  background: image-set(
-      url("/invitation/envelope-bg.jpg") 1x
-    )
-    center 58% / cover no-repeat;
+    /* Use the uploaded baby photo but keep it fully visible and centered on the hero (second) page.
+      Use `contain` to avoid cropping the subject; center the image for visual balance. */
+    background: image-set(url("/invitation/iria.jpg") 1x) center center / contain no-repeat;
   --parallax-y: 0px;
   translate: 0 var(--parallax-y);
   transform: scale(1.055);
@@ -498,7 +497,8 @@
 }
 @media (max-width: 767px) {
   .hero__background {
-    background-position: 86% 50%;
+    /* Slightly shift on small screens if needed, but keep the baby centered by default. */
+    background-position: center 52%;
   }
 }
 .hero__veil {
@@ -610,7 +610,233 @@
   position: relative;
   padding: clamp(5rem, 11vw, 9rem) 0;
   overflow: hidden;
-  background: linear-gradient(180deg, #fff9f2, #f8eaf7 42%, #e5f2dd);
+  isolation: isolate;
+  /* Pastel fairy-garden wash: cream -> blush -> lavender -> soft green */
+  background:
+    radial-gradient(60% 42% at 50% 0%, rgba(255, 252, 246, 0.98) 0%, rgba(255, 252, 246, 0) 70%),
+    radial-gradient(46% 38% at 8% 12%, rgba(255, 214, 233, 0.62) 0%, rgba(255, 214, 233, 0) 72%),
+    radial-gradient(44% 36% at 94% 20%, rgba(205, 226, 255, 0.58) 0%, rgba(205, 226, 255, 0) 72%),
+    radial-gradient(52% 40% at 88% 92%, rgba(216, 240, 214, 0.62) 0%, rgba(216, 240, 214, 0) 74%),
+    radial-gradient(50% 38% at 6% 90%, rgba(226, 214, 250, 0.6) 0%, rgba(226, 214, 250, 0) 74%),
+    linear-gradient(180deg, #fff9f2 0%, #fbeff7 40%, #f3eefb 70%, #eaf4e4 100%);
+}
+
+/*
+ * Decorative layer. It sits *behind* the content (z-index -1 within the
+ * section's own stacking context) so nothing can ever paint over the title,
+ * date, venue, celebration or portrait — the "clean centre" is structural,
+ * not just a matter of picking nice coordinates.
+ */
+.fae-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ── Corner floral clusters ────────────────────────────────────────── */
+.fae-bloom {
+  position: absolute;
+  width: var(--bloom, 210px);
+  aspect-ratio: 1;
+  opacity: 0.9;
+  filter: drop-shadow(0 10px 22px rgba(122, 80, 128, 0.16));
+  animation: bloomSway 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.fae-bloom svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  /*
+   * Only a tiny rotation per corner. The cluster artwork is asymmetric, so a full
+   * vertical mirror (`scaleY(-1)`) flipped the blossoms to the wrong side of the
+   * box and made the lower clusters look pasted on and detached from the vines.
+   * A small tilt gives variety without breaking the composition.
+   */
+  transform: rotate(var(--tilt, 0deg));
+}
+.fae-bloom--tl { top: -30px; left: -26px; --bloom: 226px; --tilt: 0deg; }
+.fae-bloom--tr { top: -34px; right: -28px; --bloom: 208px; --tilt: 9deg; animation-delay: -6s; }
+.fae-bloom--bl { bottom: -30px; left: -26px; --bloom: 202px; --tilt: -7deg; animation-delay: -11s; }
+.fae-bloom--br { bottom: -34px; right: -26px; --bloom: 218px; --tilt: 6deg; animation-delay: -16s; }
+
+/* ── Vines drifting down the side gutters ──────────────────────────── */
+.fae-vine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 86px;
+  opacity: 0.68;
+  /* A curving stem with alternating leaf blades along it. */
+  background:
+    radial-gradient(ellipse 11px 19px at 58% 6%, #a8d4a4 0 90%, transparent 92%),
+    radial-gradient(ellipse 11px 19px at 30% 18%, #bde0b6 0 90%, transparent 92%),
+    radial-gradient(ellipse 11px 19px at 62% 30%, #a8d4a4 0 90%, transparent 92%),
+    radial-gradient(ellipse 11px 19px at 28% 42%, #bde0b6 0 90%, transparent 92%),
+    radial-gradient(ellipse 11px 19px at 60% 54%, #a8d4a4 0 90%, transparent 92%),
+    radial-gradient(ellipse 11px 19px at 32% 66%, #bde0b6 0 90%, transparent 92%),
+    radial-gradient(ellipse 11px 19px at 58% 78%, #a8d4a4 0 90%, transparent 92%),
+    radial-gradient(ellipse 11px 19px at 30% 90%, #bde0b6 0 90%, transparent 92%),
+    linear-gradient(92deg, transparent 0 44px, rgba(126, 170, 136, 0.7) 44px 47px, transparent 47px);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+  animation: vineDrift 30s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.fae-vine--left { left: -14px; }
+/*
+ * Mirror about the element's own centre (``transform-origin: center``) so the
+ * right-hand vine stays in its gutter. A plain `scaleX(-1)` combined with the
+ * negative `right` offset shifted it out of position on narrow screens, leaving
+ * the right edge bare.
+ */
+.fae-vine--right {
+  right: -14px;
+  transform: scaleX(-1);
+  transform-origin: center;
+  animation-delay: -9s;
+}
+
+/* ── Hedgerow foliage along the top and bottom edges ───────────────── */
+/*
+ * Deliberately shallow and fully contained: this band is only 40px tall and its
+ * blades are sized to sit inside that, so it can never stripe the body of the
+ * section or leave detached blobs floating in open space. It is the top/bottom
+ * counterpart to the side vines — together they form one continuous border.
+ */
+.fae-leaves {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  opacity: 0.6;
+  background:
+    radial-gradient(ellipse 11px 15px at 4% 58%, #9ecd9f 0 92%, transparent 94%),
+    radial-gradient(ellipse 10px 13px at 14% 40%, #b6dfb0 0 92%, transparent 94%),
+    radial-gradient(ellipse 11px 15px at 25% 60%, #9ecd9f 0 92%, transparent 94%),
+    radial-gradient(ellipse 10px 13px at 36% 40%, #b6dfb0 0 92%, transparent 94%),
+    radial-gradient(ellipse 11px 15px at 47% 60%, #9ecd9f 0 92%, transparent 94%),
+    radial-gradient(ellipse 10px 13px at 58% 40%, #b6dfb0 0 92%, transparent 94%),
+    radial-gradient(ellipse 11px 15px at 69% 60%, #9ecd9f 0 92%, transparent 94%),
+    radial-gradient(ellipse 10px 13px at 80% 40%, #b6dfb0 0 92%, transparent 94%),
+    radial-gradient(ellipse 11px 15px at 91% 60%, #9ecd9f 0 92%, transparent 94%),
+    radial-gradient(ellipse 10px 13px at 98% 42%, #b6dfb0 0 92%, transparent 94%),
+    linear-gradient(180deg, rgba(122, 168, 132, 0.8) 0 2px, transparent 2px 100%);
+  animation: leavesBreathe 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.fae-leaves--top { top: 0; }
+.fae-leaves--bottom {
+  bottom: 0;
+  transform: scaleY(-1);
+  animation-delay: -13s;
+}
+
+/* ── Butterflies ───────────────────────────────────────────────────── */
+.fae-moth {
+  position: absolute;
+  width: var(--size, 34px);
+  color: var(--tint, #f0a8cf);
+  opacity: 0.9;
+  filter: drop-shadow(0 5px 11px rgba(96, 60, 104, 0.26));
+  animation: mothDrift var(--dur, 20s) ease-in-out var(--delay, 0s) infinite alternate;
+  will-change: transform;
+}
+.fae-moth svg { width: 100%; height: auto; display: block; }
+/* Kept in the outer gutters / corner zones on wide screens. */
+.fae-moth--1 { top: 9%; left: 3%; --size: 40px; --delay: -1s; }
+.fae-moth--2 { top: 22%; right: 4.5%; --size: 32px; --tint: #cbb6f2; --delay: -5s; --dur: 24s; }
+.fae-moth--3 { top: 46%; left: 2%; --size: 29px; --tint: #bcd8ff; --delay: -9s; --dur: 26s; }
+.fae-moth--4 { top: 62%; right: 3%; --size: 37px; --tint: #f6bcd6; --delay: -3s; }
+.fae-moth--5 { top: 78%; left: 5%; --size: 31px; --tint: #cfe8c6; --delay: -13s; --dur: 28s; }
+.fae-moth--6 { top: 88%; right: 6%; --size: 26px; --tint: #e0cff7; --delay: -7s; --dur: 22s; }
+
+/* ── Fairy particles ───────────────────────────────────────────────── */
+.fae-spark {
+  position: absolute;
+  width: var(--s, 6px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff6d0;
+  box-shadow: 0 0 6px 2px rgba(255, 246, 208, 0.95), 0 0 18px 8px rgba(255, 228, 150, 0.34);
+  opacity: 0.7;
+  animation: sparkGlow var(--sdur, 7s) ease-in-out var(--sdelay, 0s) infinite;
+}
+.fae-spark--1 { top: 7%; left: 16%; --s: 5px; }
+.fae-spark--2 { top: 14%; right: 20%; --s: 6px; --sdelay: -1.6s; }
+.fae-spark--3 { top: 34%; left: 7%; --s: 4px; --sdelay: -3.2s; --sdur: 8.5s; }
+.fae-spark--4 { top: 52%; right: 8%; --s: 5px; --sdelay: -2.4s; }
+.fae-spark--5 { top: 68%; left: 13%; --s: 6px; --sdelay: -4.1s; --sdur: 9s; }
+.fae-spark--6 { top: 84%; right: 17%; --s: 4px; --sdelay: -5.3s; }
+.fae-spark--7 { top: 93%; left: 32%; --s: 5px; --sdelay: -0.8s; }
+.fae-spark--8 { top: 3%; right: 38%; --s: 4px; --sdelay: -6.2s; --sdur: 10s; }
+
+/* ── Animations: slow, small, elegant ─────────────────────────────── */
+@keyframes bloomSway {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  100% { transform: translate3d(5px, -6px, 0) rotate(2.4deg) scale(1.045); }
+}
+@keyframes vineDrift {
+  0% { transform: translate3d(0, -7px, 0); }
+  100% { transform: translate3d(0, 7px, 0); }
+}
+@keyframes leavesBreathe {
+  0% { transform: translate3d(-4px, 0, 0) scale(1); }
+  100% { transform: translate3d(4px, 3px, 0) scale(1.03); }
+}
+@keyframes mothDrift {
+  0% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+  50% { transform: translate3d(6px, -10px, 0) rotate(4deg); }
+  100% { transform: translate3d(-5px, -18px, 0) rotate(-3deg); }
+}
+@keyframes sparkGlow {
+  0%, 100% { opacity: 0.2; transform: scale(0.7); }
+  50% { opacity: 0.85; transform: scale(1.15); }
+}
+
+/* Tablet/phone: shrink and hug the edges so the centre column stays clear. */
+@media (max-width: 900px) {
+  .fae-bloom { opacity: 0.8; }
+  .fae-bloom--tl { top: -26px; left: -24px; --bloom: 172px; }
+  .fae-bloom--tr { top: -30px; right: -26px; --bloom: 164px; }
+  .fae-bloom--bl { bottom: -28px; left: -24px; --bloom: 152px; }
+  .fae-bloom--br { bottom: -32px; right: -22px; --bloom: 168px; }
+  .fae-vine { width: 58px; opacity: 0.6; }
+  .fae-vine--left { left: -22px; }
+  .fae-vine--right { right: -22px; }
+  .fae-leaves { height: 38px; opacity: 0.66; }
+  /* Pull the mid-height butterflies out of the centre column entirely. */
+  .fae-moth--2 { right: 2%; }
+  .fae-moth--4 { right: 1.5%; }
+  .fae-moth--5 { left: 2%; }
+  .fae-moth--6 { right: 3%; }
+  .fae-spark--3, .fae-spark--5 { left: 3.5%; }
+  .fae-spark--4 { right: 3.5%; }
+}
+
+/* Narrow phones: decorations retreat to the corners and the very edges only. */
+@media (max-width: 620px) {
+  .fae-bloom { opacity: 0.7; }
+  .fae-bloom--tl { top: -16px; left: -16px; --bloom: 122px; }
+  .fae-bloom--tr { top: -18px; right: -16px; --bloom: 116px; }
+  .fae-bloom--bl { bottom: -18px; left: -16px; --bloom: 108px; }
+  .fae-bloom--br { bottom: -20px; right: -14px; --bloom: 120px; }
+  .fae-vine { width: 40px; opacity: 0.5; }
+  .fae-vine--left { left: -20px; }
+  .fae-vine--right { right: -20px; }
+  .fae-leaves { height: 32px; opacity: 0.6; }
+  /* Mid-column butterflies would sit over the cards — drop them on phones. */
+  .fae-moth--3,
+  .fae-moth--5 { display: none; }
+  .fae-moth--1 { top: 6%; left: 2.5%; --size: 28px; }
+  .fae-moth--2 { top: 15%; right: 3%; --size: 24px; }
+  .fae-moth--4 { top: 58%; right: 2.5%; --size: 26px; }
+  .fae-moth--6 { top: 86%; right: 4%; --size: 22px; }
+  .fae-spark--3, .fae-spark--5 { left: 2%; }
+  .fae-spark--4 { right: 2%; }
+  .fae-spark--7 { left: 24%; }
 }
 .garden-route {
   position: relative;
@@ -815,16 +1041,108 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transform: scale(1.04);
+  /*
+   * `contain` shows the WHOLE portrait — top, bottom and both sides — instead of
+   * cropping Iria to fill a wide box. swing.jpg is 1152x1728 (ratio 0.667), so on
+   * a landscape viewport the photo cannot fill the width without being cut; the
+   * leftover space either side is intentional and is dressed by the fairy-garden
+   * backdrop on the parent section (see `.celebrant-scene::before` / `::after`).
+   * The image is never stretched: `contain` scales uniformly and preserves ratio.
+   */
+  object-fit: contain;
+  object-position: center center;
+  /* No zoom on the photo itself — only the very gentle breathing keyframes. */
+  transform: scale(1);
   animation: celebrantSlowZoom 18s ease-in-out infinite alternate;
   --parallax-y: 0px;
   translate: 0 var(--parallax-y);
 }
-.celebrant-scene__shade {
+
+/*
+ * Fairy-garden side panels. These sit behind the contained portrait and fill the
+ * gutters with a soft pastel wash plus scattered blooms, so the composition reads
+ * as a portrait placed inside a garden scene rather than a photo with dead space.
+ *
+ * Note the decoration spans the FULL width as a reapeating field: which parts end
+ * up visible depends on the viewport, so anchoring only to the far edges would
+ * leave the gutters bare on wide screens (the photo covers the middle) while
+ * showing nothing at the sides. A full-width field guarantees the visible gutters
+ * are always dressed, whatever the aspect ratio.
+ */
+.celebrant-scene::before {
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(20, 12, 28, 0.1), rgba(30, 16, 40, 0.78));
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(30% 34% at 12% 20%, rgba(255, 209, 233, 0.95) 0%, rgba(255, 209, 233, 0) 72%),
+    radial-gradient(28% 32% at 88% 24%, rgba(200, 224, 255, 0.9) 0%, rgba(200, 224, 255, 0) 72%),
+    radial-gradient(32% 34% at 86% 82%, rgba(210, 240, 208, 0.9) 0%, rgba(210, 240, 208, 0) 74%),
+    radial-gradient(30% 32% at 14% 84%, rgba(224, 210, 252, 0.9) 0%, rgba(224, 210, 252, 0) 74%),
+    radial-gradient(24% 26% at 50% 8%, rgba(255, 246, 220, 0.55) 0%, rgba(255, 246, 220, 0) 70%),
+    linear-gradient(180deg, #fdf4f9 0%, #f6f0fd 44%, #edf6ec 100%);
+}
+/* A soft scatter of blossoms/leaves drifting across the whole section. */
+.celebrant-scene::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.75;
+  background-image:
+    radial-gradient(circle at 30px 40px, rgba(255, 190, 220, 0.95) 0 16px, rgba(255, 190, 220, 0) 17px),
+    radial-gradient(circle at 130px 150px, rgba(206, 222, 255, 0.9) 0 13px, rgba(206, 222, 255, 0) 14px),
+    radial-gradient(circle at 60px 270px, rgba(203, 236, 205, 0.9) 0 15px, rgba(203, 236, 205, 0) 16px),
+    radial-gradient(circle at 180px 360px, rgba(226, 208, 252, 0.9) 0 12px, rgba(226, 208, 252, 0) 13px),
+    radial-gradient(circle at 40px 470px, rgba(255, 226, 190, 0.85) 0 11px, rgba(255, 226, 190, 0) 12px),
+    radial-gradient(circle at 150px 560px, rgba(255, 190, 220, 0.85) 0 14px, rgba(255, 190, 220, 0) 15px),
+    radial-gradient(circle at 90px 660px, rgba(206, 222, 255, 0.8) 0 12px, rgba(206, 222, 255, 0) 13px);
+  /* Tile the scatter so it covers any section height. */
+  background-size: 240px 720px;
+  background-repeat: repeat;
+  animation: celebrantGardenDrift 34s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes celebrantGardenDrift {
+  0% { transform: translate3d(-1.4%, 0, 0) rotate(0deg); }
+  100% { transform: translate3d(1.4%, -1.2%, 0) rotate(1.4deg); }
+}
+
+/* On phones the portrait already fits the width, so the gutters are narrow —
+   calm the backdrop right down so it reads as atmosphere, not clutter. */
+@media (max-width: 620px) {
+  .celebrant-scene::after { opacity: 0.34; }
+  .celebrant-scene__image {
+    /* Keep the whole photo visible; no crop on narrow screens either. */
+    object-fit: contain;
+    object-position: center center;
+    transform: scale(1);
+  }
+}
+
+/*
+ * The copy sits over the lower part of the SCENE, which with `contain` is often
+ * the pastel gutter rather than the photo. The original full-bleed dark gradient
+ * would have muddied that backdrop and left white text on a pale background, so
+ * this is now a contained scrim: a soft plum panel behind the text only, keeping
+ * it readable over either the photo or the garden wash.
+ */
+.celebrant-scene__shade {
+  position: absolute;
+  inset: auto 0 0;
+  height: min(58%, 440px);
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 16, 40, 0) 0%,
+    rgba(33, 18, 44, 0.34) 34%,
+    rgba(31, 17, 42, 0.62) 64%,
+    rgba(28, 15, 38, 0.82) 100%
+  );
 }
 .celebrant-scene__copy {
   position: relative;
@@ -1057,52 +1375,112 @@
   box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.7);
 }
 
-/* Venue */
+/* Venue — soft pastel garden gradient, very slow drift */
 .venue-scene {
   position: relative;
-  padding: clamp(5rem, 11vw, 9rem) 1.2rem 4rem;
+  display: grid;
+  place-items: center;
+  padding: clamp(5rem, 11vw, 8.5rem) 1.25rem clamp(4.5rem, 10vw, 7.5rem);
   overflow: hidden;
-  color: white;
   text-align: center;
   isolation: isolate;
-  background: #3d2a48;
+  background: #fbf4fb;
 }
+
+/* Slowly breathing pastel gradient */
 .venue-scene__image {
   position: absolute;
-  inset: -8%;
+  inset: -18%;
   z-index: 0;
-  background: url("/invitation/venue.jpg") center / cover no-repeat;
-  --parallax-y: 0px;
-  translate: 0 var(--parallax-y);
-  transform: scale(1.06);
+  background:
+    radial-gradient(38% 46% at 22% 28%, rgba(255, 214, 235, 0.95) 0%, rgba(255, 214, 235, 0) 70%),
+    radial-gradient(36% 44% at 78% 22%, rgba(212, 226, 255, 0.9) 0%, rgba(212, 226, 255, 0) 70%),
+    radial-gradient(42% 50% at 70% 82%, rgba(255, 236, 199, 0.9) 0%, rgba(255, 236, 199, 0) 72%),
+    radial-gradient(44% 52% at 26% 78%, rgba(214, 244, 224, 0.92) 0%, rgba(214, 244, 224, 0) 72%),
+    radial-gradient(40% 48% at 50% 50%, rgba(230, 216, 255, 0.9) 0%, rgba(230, 216, 255, 0) 74%),
+    linear-gradient(158deg, #fdf3f8 0%, #f6f1fd 34%, #f1f9f4 66%, #fdf6ee 100%);
+  filter: saturate(1.03);
+  animation: venueDrift 34s ease-in-out infinite alternate;
+  will-change: transform;
 }
+
+/* Very faint glow drifting over the gradient, to keep the section from feeling flat */
 .venue-scene::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -45%;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(30, 18, 40, 0.28), rgba(30, 18, 40, 0.42));
+  background: radial-gradient(30% 30% at 40% 40%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 70%);
+  mix-blend-mode: soft-light;
+  animation: venueHalo 26s ease-in-out infinite alternate;
+  will-change: transform, opacity;
 }
-.venue-scene__copy,
-.venue-scene .map-shell,
-.venue-scene .fg-btn {
+
+/* Very soft garden texture sitting on top of the gradient */
+.venue-scene__inner::before {
+  content: "";
+  position: absolute;
+  inset: -18vmax -12vmax;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1.6px, rgba(255, 255, 255, 0) 2px),
+    radial-gradient(circle, rgba(158, 120, 199, 0.28) 0 1.2px, rgba(158, 120, 199, 0) 2px),
+    radial-gradient(circle, rgba(255, 224, 180, 0.4) 0 1.8px, rgba(255, 224, 180, 0) 2.4px);
+  background-size: 190px 190px, 260px 260px, 330px 330px;
+  background-position: 0 0, 90px 130px, 170px 40px;
+  animation: venueFaeShift 44s linear infinite;
+  will-change: transform;
+}
+
+.venue-scene__inner {
   position: relative;
   z-index: 2;
+  width: min(100%, 520px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.4rem, 4.5vw, 2.1rem);
 }
-.map-shell {
-  width: min(92%, 760px);
-  margin: 1.6rem auto;
-  border-radius: 24px;
-  overflow: hidden;
-  min-height: 280px;
-  box-shadow: 0 24px 50px rgba(20, 10, 30, 0.3);
-  background: #ddd;
+
+.venue-scene__eyebrow {
+  margin: 0;
+  color: #8c548f;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
 }
-.map-shell iframe {
-  width: 100%;
-  height: 320px;
-  border: 0;
+
+@keyframes venueDrift {
+  0% {
+    transform: translate3d(-2.4%, -1.6%, 0) scale(1.05) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(1.8%, 1.4%, 0) scale(1.1) rotate(1.1deg);
+  }
+  100% {
+    transform: translate3d(2.4%, -2%, 0) scale(1.06) rotate(-1.1deg);
+  }
+}
+
+@keyframes venueHalo {
+  0% {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate3d(6%, 4%, 0) scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+@keyframes venueFaeShift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-190px, -190px, 0);
+  }
 }
 
 /* Dress */
@@ -1278,6 +1656,7 @@
   position: absolute;
   inset: -8%;
   z-index: 0;
+  /* Use the celebrant portrait if present; copy Iria's photo to public/invitation/iria.jpg */
   background: url("/invitation/closing.jpg") center / cover no-repeat;
   --parallax-y: 0px;
   translate: 0 var(--parallax-y);
@@ -1567,8 +1946,19 @@
   .final-scene__background,
   .route-lantern,
   .final-lanterns i,
+  .fae-bloom,
+  .fae-vine,
+  .fae-leaves,
+  .fae-moth,
+  .fae-spark,
   .fg-btn--glow::before {
     animation: none !important;
+  }
+  .venue-scene__image,
+  .venue-scene::before,
+  .venue-scene__inner::before {
+    animation: none !important;
+    transform: none;
   }
   .reveal {
     opacity: 1;
@@ -1579,4 +1969,103 @@
     display: none;
   }
 }
+
+/* Centered glass location card for the venue scene */
+.venue-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 2.6rem) clamp(1.4rem, 6vw, 2.4rem) clamp(1.75rem, 5vw, 2.2rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-radius: clamp(26px, 7vw, 36px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.72), rgba(255, 250, 254, 0.42));
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  backdrop-filter: blur(14px) saturate(1.25);
+  box-shadow:
+    0 26px 50px -22px rgba(105, 68, 116, 0.34),
+    0 3px 12px rgba(105, 68, 116, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+}
+/* faint inner sheen so the card reads as soft glass */
+.venue-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(120% 88% at 50% -12%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 62%);
+}
+
+.venue-card__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 0.35rem;
+  border-radius: 999px;
+  color: #7d4f9c;
+  background: linear-gradient(150deg, #fff, #fbe4f1 55%, #e6dbff);
+  box-shadow:
+    0 10px 22px -12px rgba(105, 68, 116, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.85) inset;
+}
+.venue-card__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.venue-card__name {
+  margin: 0;
+  color: #49304f;
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 5.4vw, 2.15rem);
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+.venue-card__city {
+  margin: 0.5rem 0 0;
+  color: #7b5a83;
+  font-size: 0.94rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.venue-card__divider {
+  width: min(150px, 62%);
+  height: 1px;
+  margin: clamp(1.4rem, 4.6vw, 1.8rem) 0;
+  background: linear-gradient(90deg, rgba(157, 120, 199, 0), rgba(157, 120, 199, 0.5), rgba(157, 120, 199, 0));
+}
+
+.venue-card__button {
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+@media (max-width: 420px) {
+  .venue-card {
+    max-width: 100%;
+    padding: 1.9rem 1.35rem 1.7rem;
+    border-radius: 26px;
+  }
+  .venue-card__city {
+    font-size: 0.86rem;
+    letter-spacing: 0.12em;
+  }
+  .venue-card__button {
+    width: 100%;
+    padding-inline: 1.1rem;
+  }
+}
+
 
