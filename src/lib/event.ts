@@ -28,8 +28,17 @@ export const event = {
   pageDescription:
     "You are invited to Iria Asuna’s first birthday — a fairy garden afternoon of tiny wonders, lanterns, and love.",
 
-  /* Tuesday Novermber, 04, 3:00 PM, Philippines */
-  dateISO: "2026-11-03T15:00:00+08:00",
+  /*
+   * Event start. NOTE: `dateISO` drives the countdown timer, while `timeLabel` is
+   * what guests actually read on the invitation — they were previously
+   * inconsistent (15:00 vs "5:00 PM"), so the countdown was ticking to a time two
+   * hours earlier than the one shown. `dateISO` now matches the displayed time;
+   * keep the two in step if either is ever changed.
+   *
+   * CONFIRM THIS with the host — it is the one value derived from conflicting
+   * sources rather than copied directly.
+   */
+  dateISO: "2026-11-03T17:00:00+08:00",
   dateLabel: "November 03, 2026",
   dayLabel: "Tuesday",
   timeLabel: "5:00 PM",
@@ -75,8 +84,6 @@ export const event = {
 
   galleryEyebrow: "A Garden of Memories",
   galleryTitle: "Sweet Moments in Bloom",
-  meadowEyebrow: "Little Chapters",
-  meadowTitle: "Iria’s Memory Meadow",
 
   giftEyebrow: "A Note from the Garden",
   giftTitle: "Your Presence Is the Loveliest Gift",

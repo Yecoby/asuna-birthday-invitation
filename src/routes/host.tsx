@@ -186,7 +186,14 @@ function HostDesk() {
   };
 
   const handleResetTimer = async () => {
-    if (!window.confirm("Reset countdown timer to the default event date (October 17, 2026)?")) {
+    // Read the date from config rather than repeating it, so this dialog can never
+    // drift out of sync with the real event (it previously said October 17, 2026
+    // while the invitation said November 03, 2026).
+    if (
+      !window.confirm(
+        `Reset the countdown timer to the invitation's event date (${event.dateLabel})?`,
+      )
+    ) {
       return;
     }
     const reset = await saveHostTimerSettings({

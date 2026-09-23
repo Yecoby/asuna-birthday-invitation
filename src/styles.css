@@ -1078,24 +1078,29 @@
 }
 
 /*
- * The copy sits over the lower part of the SCENE, which with `contain` is often
- * the pastel gutter rather than the photo. The original full-bleed dark gradient
- * would have muddied that backdrop and left white text on a pale background, so
- * this is now a contained scrim: a soft plum panel behind the text only, keeping
- * it readable over either the photo or the garden wash.
+ * Scrim behind the copy.
+ *
+ * The copy is anchored to the BOTTOM of the section, and on wide viewports the
+ * contained portrait's lower half (Iria's gown) lands right behind it. The
+ * previous gradient faded to fully transparent across its top half, so the
+ * headline sat on bare, bright pink fabric — low contrast AND a visible hard
+ * edge where the panel began. This version carries real opacity across the whole
+ * panel and eases in from nothing, so the text always has a calm base and the
+ * top edge blends away instead of showing a seam.
  */
 .celebrant-scene__shade {
   position: absolute;
   inset: auto 0 0;
-  height: min(58%, 440px);
+  height: min(66%, 480px);
   z-index: 1;
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(30, 16, 40, 0) 0%,
-    rgba(33, 18, 44, 0.34) 34%,
-    rgba(31, 17, 42, 0.62) 64%,
-    rgba(28, 15, 38, 0.82) 100%
+    rgba(31, 17, 42, 0) 0%,
+    rgba(31, 17, 42, 0.22) 18%,
+    rgba(31, 17, 42, 0.5) 42%,
+    rgba(29, 16, 40, 0.72) 68%,
+    rgba(27, 14, 37, 0.86) 100%
   );
 }
 .celebrant-scene__copy {
@@ -1187,11 +1192,8 @@
 }
 
 /* Gallery */
-.editorial-gallery,
-.masonry-section {
-  padding: clamp(4.5rem, 10vw, 8rem) 0;
-}
 .editorial-gallery {
+  padding: clamp(4.5rem, 10vw, 8rem) 0;
   background: #fff8f2;
 }
 .editorial-layout {
@@ -1225,19 +1227,6 @@
   overflow: hidden;
   background: #ddd;
 }
-.editorial-feature span {
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(255, 253, 248, 0.9);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-ink);
-}
 .photo-strip {
   overflow: hidden;
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
@@ -1254,30 +1243,6 @@
   object-fit: cover;
   border-radius: 16px;
 }
-.masonry-section {
-  background: linear-gradient(180deg, #f8eaf7, #fff9f2);
-}
-.masonry-gallery {
-  width: min(92%, 980px);
-  margin: 0 auto;
-  columns: 3 180px;
-  gap: 0.85rem;
-}
-.masonry-gallery button {
-  width: 100%;
-  margin-bottom: 0.85rem;
-  padding: 0;
-  border: 0;
-  border-radius: 18px;
-  overflow: hidden;
-  background: transparent;
-  break-inside: avoid;
-}
-.masonry-gallery img {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
-}
 
 @media (max-width: 720px) {
   .editorial-layout {
@@ -1291,9 +1256,6 @@
   }
   .editorial-small {
     min-height: 220px;
-  }
-  .masonry-gallery {
-    columns: 2 140px;
   }
 }
 

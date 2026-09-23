@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { Music, Music2 } from "lucide-react";
 import { event } from "@/lib/event";
-import { saveRsvp, type Attendance } from "@/lib/rsvp";
+import { hasReplied, markReplied, repliedName, saveRsvp, type Attendance } from "@/lib/rsvp";
 import { submitRsvp } from "@/lib/host-data";
 import { createGardenAudio } from "@/lib/garden-audio";
 import { loadTimerSettings } from "@/lib/countdown-settings";
@@ -182,6 +182,10 @@ export function InvitationApp() {
   const [hunt, setHunt] = useState(0);
   const [rsvpDone, setRsvpDone] = useState(false);
   const [rsvpStatus, setRsvpStatus] = useState("");
+  // Read once on mount: a guest who already replied on this device is shown the
+  // "thanks again" note instead of the form, so they cannot double-submit.
+  const [alreadyReplied, setAlreadyReplied] = useState(false);
+  const [priorName, setPriorName] = useState("");
   const [wand, setWand] = useState({ x: 0, y: 0, on: false });
   const audio = useRef<ReturnType<typeof createGardenAudio> | null>(null);
   const glitterRef = useRef<HTMLDivElement>(null);
@@ -203,6 +207,16 @@ export function InvitationApp() {
       '/invitation/02. What If There Was Pink - The Pirate Fairy Soundtrack - (320 Kbps) (1).mp3'
     );
     return () => audio.current?.stop();
+  }, []);
+
+  useEffect(() => {
+    // One reply per device: if this browser already sent one, skip straight to the
+    // thank-you state so the form is never offered twice.
+    if (hasReplied()) {
+      setAlreadyReplied(true);
+      setRsvpDone(true);
+      setPriorName(repliedName());
+    }
   }, []);
 
   useEffect(() => {
@@ -309,6 +323,11 @@ export function InvitationApp() {
       // silently lost, and still let them through to the thank-you note.
       saveRsvp({ guestName, attendance, attendees, contact, message });
     }
+    // Remember on this device that a reply was sent, so returning guests see the
+    // thank-you note rather than the form again.
+    markReplied(guestName);
+    setAlreadyReplied(true);
+    setPriorName(guestName);
     setRsvpDone(true);
     setRsvpStatus("");
     const panel = form.getBoundingClientRect();
@@ -640,7 +659,6 @@ export function InvitationApp() {
                 aria-label={`Open ${event.gallery[0].alt}`}
               >
                 <img loading="lazy" src={event.gallery[0].src} alt={event.gallery[0].alt} />
-                <span>Open memory</span>
               </button>
               <button
                 className="editorial-small editorial-small--one reveal"
@@ -659,29 +677,28 @@ export function InvitationApp() {
             </div>
             <div className="photo-strip" aria-hidden="true">
               <div className="photo-strip__track">
+                {/*
+                 * `loading="eager"` is deliberate, not an oversight. This track is
+                 * 2x the meadow list inside an `overflow: hidden` marquee that is
+                 * animated with `transform` — which fires no scroll or resize event,
+                 * so the browser's lazy-load intersection check never re-runs for the
+                 * images outside the visible band. They stayed permanently
+                 * un-requested, leaving visible GAPS scrolling through the strip
+                 * (8 of 12 never loaded on a 390px phone). Only 6 unique files are
+                 * involved after de-duplication, so eager loading is cheap and
+                 * correct here. `fetchPriority="low"` keeps them behind the hero.
+                 */}
                 {[...event.meadow, ...event.meadow].map((item, i) => (
-                  <img key={`${item.src}-${i}`} loading="lazy" src={item.src} alt="" />
+                  <img
+                    key={`${item.src}-${i}`}
+                    loading="eager"
+                    decoding="async"
+                    fetchPriority="low"
+                    src={item.src}
+                    alt=""
+                  />
                 ))}
               </div>
-            </div>
-          </section>
-
-          <section className="masonry-section motion-scene" aria-labelledby="masonryTitle">
-            <div className="section-heading reveal">
-              <p className="eyebrow">{event.meadowEyebrow}</p>
-              <h2 id="masonryTitle">{event.meadowTitle}</h2>
-            </div>
-            <div className="masonry-gallery">
-              {event.meadow.map((item) => (
-                <button
-                  key={item.src}
-                  className="reveal"
-                  type="button"
-                  onClick={() => openPhoto(item.full, item.alt)}
-                >
-                  <img loading="lazy" src={item.src} alt={item.alt} />
-                </button>
-              ))}
             </div>
           </section>
 
@@ -798,7 +815,14 @@ export function InvitationApp() {
                 <div className="rsvp-success" tabIndex={-1}>
                   <ButterflyIcon />
                   <h3>{event.rsvpSuccessTitle}</h3>
-                  <p>{event.rsvpSuccessBody}</p>
+                  {/* A returning guest (already replied on this device) gets a
+                      slightly different note, so it reads as a recognition rather
+                      than as if their earlier reply was just sent again. */}
+                  <p>
+                    {alreadyReplied && priorName
+                      ? `Your reply is already with us, ${priorName}. No need to send it again.`
+                      : event.rsvpSuccessBody}
+                  </p>
                 </div>
               )}
             </div>
