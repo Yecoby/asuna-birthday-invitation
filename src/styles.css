@@ -981,52 +981,6 @@
   opacity: 0.85;
 }
 
-/* Trail */
-.trail {
-  position: relative;
-  padding: clamp(5rem, 11vw, 9rem) 0;
-  background: linear-gradient(180deg, #f7efe4, #fff8f2 40%, #f3e4f4);
-}
-.trail__items {
-  width: min(92%, 820px);
-  margin: 0 auto;
-  display: grid;
-  gap: 1.4rem;
-}
-.trail-stop {
-  display: grid;
-  grid-template-columns: 92px 1fr;
-  gap: 1rem;
-  align-items: center;
-  padding: 0.7rem;
-  background: #fffdfb;
-  border-radius: 22px;
-  box-shadow: 0 12px 30px rgba(72, 46, 70, 0.08);
-}
-.trail-stop figure {
-  margin: 0;
-  border-radius: 16px;
-  overflow: hidden;
-  height: 118px;
-}
-.trail-stop img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.trail-stop span {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  color: var(--color-lavender);
-  letter-spacing: 0.06em;
-}
-.trail-stop p {
-  margin: 0;
-  color: #6a4a70;
-  font-size: 0.95rem;
-}
-
 /* Celebrant */
 .celebrant-scene {
   position: relative;

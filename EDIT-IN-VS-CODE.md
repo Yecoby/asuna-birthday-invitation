@@ -32,9 +32,9 @@ Typical edits:
 
 Replace files in `public/invitation/` **keeping the same filename**, or update the paths in `event.ts`.
 
-Hero, venue, closing, dress looks, gallery, and the twelve milestone images are all listed in that config.
+Hero, venue, closing, dress looks, and gallery images are all listed in that config.
 
-Tip: use your own portraits of Iria for the trail, gallery, and celebrant scene. The included artwork is original garden illustration so the template is ready to send before photos are added.
+Tip: use your own portraits of Iria for the gallery and celebrant scene. The included artwork is original garden illustration so the template is ready to send before photos are added.
 
 ## 3. RSVPs
 

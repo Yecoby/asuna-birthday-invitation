@@ -578,28 +578,6 @@ export function InvitationApp() {
             </section>
           )}
 
-          <section className="trail motion-scene" id="fairyTrail" aria-labelledby="trailTitle">
-            <div className="section-heading reveal">
-              <p className="eyebrow">{event.trailEyebrow}</p>
-              <h2 id="trailTitle">{event.trailTitle}</h2>
-              <p>{event.trailLead}</p>
-            </div>
-            <div className="trail__items">
-              {event.milestones.map((m) => (
-                <article className="trail-stop reveal" key={m.n}>
-                  <figure>
-                    <img loading="lazy" src={m.image} width={533} height={800} alt={m.alt} />
-                  </figure>
-                  <div>
-                    <span>{m.n}</span>
-                    <h3>{m.title}</h3>
-                    <p>{m.body}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
           <section className="celebrant-scene motion-scene" aria-label="Celebrant portrait scene">
             <img
               className="celebrant-scene__image"

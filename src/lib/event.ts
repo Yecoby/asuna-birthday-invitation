@@ -10,14 +10,6 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-export type Milestone = {
-  n: string;
-  title: string;
-  body: string;
-  image: string;
-  alt: string;
-};
-
 export type GalleryItem = {
   src: string;
   full: string;
@@ -69,10 +61,6 @@ export const event = {
 
   countdownEyebrow: "Until the Fairy Bells Ring",
   countdownTitle: "A Little Magic Is Growing",
-
-  trailEyebrow: "First-Year Fairy Trail",
-  trailTitle: "Twelve Little Wonders",
-  trailLead: "Every tiny step has led to this first birthday.",
 
   celebrantEyebrow: "Our Brightest Little Bloom",
   celebrantTitle: "One year of Iria",
@@ -131,21 +119,6 @@ export const event = {
     swing: "/invitation/swing.jpg",
     portrait: "/invitation/gallery-swing.jpg",
   },
-
-  milestones: [
-    { n: "01", title: "Welcome, Little Fairy", body: "The day our garden became brighter.", image: "/invitation/mile-welcome.jpg", alt: "Sunlit garden welcome" },
-    { n: "02", title: "First Smile", body: "A sunrise tucked inside one tiny grin.", image: "/invitation/mile-smile.jpg", alt: "Sunrise over the garden" },
-    { n: "03", title: "First Laugh", body: "The sweetest sound in the whole garden.", image: "/invitation/mile-laugh.jpg", alt: "Blossoms and butterflies" },
-    { n: "04", title: "First Roll", body: "One little tumble toward a new adventure.", image: "/invitation/mile-roll.jpg", alt: "Flower path" },
-    { n: "05", title: "First Taste", body: "A curious bite and a very big reaction.", image: "/invitation/mile-taste.jpg", alt: "Flower crown still life" },
-    { n: "06", title: "First Crawl", body: "Tiny knees, brave heart, endless exploring.", image: "/invitation/mile-crawl.jpg", alt: "Garden path" },
-    { n: "07", title: "First Tooth", body: "A pearly little surprise appeared.", image: "/invitation/mile-tooth.jpg", alt: "Blush blossoms" },
-    { n: "08", title: "First Stand", body: "Up she rose, steady as a garden sprout.", image: "/invitation/mile-stand.jpg", alt: "Wisteria canopy" },
-    { n: "09", title: "First Step", body: "One brave step into a world of wonder.", image: "/invitation/mile-step.jpg", alt: "Lantern path" },
-    { n: "10", title: "First Word", body: "A tiny voice made the world stand still.", image: "/invitation/mile-word.jpg", alt: "Garden pond" },
-    { n: "11", title: "Tiny Adventures", body: "Flowers, giggles, sunshine, and discovery.", image: "/invitation/mile-adventure.jpg", alt: "Meadow light" },
-    { n: "12", title: "Turning One", body: "Our littlest fairy is ready to celebrate.", image: "/invitation/mile-one.jpg", alt: "Lantern evening garden" },
-  ] satisfies Milestone[],
 
   gallery: [
     { src: "/invitation/gallery-swing.jpg", full: "/invitation/swing.jpg", alt: "Flower-draped garden swing" },
