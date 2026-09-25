@@ -2,13 +2,62 @@
 > dev
 > node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8080
 
-(node:16664) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(node:32336) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
-  [32m[1mVITE[22m v8.3.0[39m  [2mready in [0m[1m10972[22m[2m[0m ms[22m
+  [32m[1mVITE[22m v8.3.0[39m  [2mready in [0m[1m4516[22m[2m[0m ms[22m
 
   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8080[22m/[39m
   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.0.106:[1m8080[22m/[39m  [2mEthernet[22m
   [32m➜[39m  [1mNetwork[22m: [36mhttp://172.25.224.1:[1m8080[22m/[39m   [2mvEthernet (Default …[22m
 [2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
-[2m6:03:05 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m connected.
+[2m1:01:14 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m connected.
+[2m1:03:39 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:03:39 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/invitation/InvitationApp.tsx[22m
+[2m1:03:39 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m program reload
+[2m1:03:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:03:45 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/invitation/InvitationApp.tsx[22m
+[2m1:03:50 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/__root.tsx, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:03:50 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/event.ts[22m
+[2m1:04:10 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/__root.tsx[22m
+[2m1:04:10 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/styles.css[22m
+[2m1:04:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/__root.tsx[22m
+[2m1:04:23 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/styles.css[22m
+[2m1:06:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:06:23 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/invitation/InvitationApp.tsx[22m
+[2m1:06:23 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m program reload
+[2m1:06:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct[22m
+[2m1:45:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:45:36 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/invitation/InvitationApp.tsx[22m
+[2m1:45:36 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m program reload
+[2m1:46:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:46:24 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/invitation/InvitationApp.tsx[22m
+[2m1:46:37 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:46:37 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/invitation/InvitationApp.tsx[22m
+[2m1:46:43 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:46:43 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/invitation/InvitationApp.tsx[22m
+[2m1:46:50 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/invitation/InvitationApp.tsx[22m
+[2m1:46:50 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/rsvp.ts[22m
+node:internal/fs/watchers:323
+    const error = new UVException({
+                  ^
+
+Error: EBUSY: resource busy or locked, watch 'C:\Users\Administrator\Downloads\iria-asuna-birthday-invitation\.vercel\output\static\invitation\02. What If There Was Pink - The Pirate Fairy Soundtrack - (320 Kbps) (1).mp3'
+    at FSWatcher.<computed> (node:internal/fs/watchers:323:19)
+    at Object.watch (node:fs:2608:36)
+    at createFsWatchInstance (file:///C:/Users/Administrator/Downloads/iria-asuna-birthday-invitation/node_modules/vite/dist/node/chunks/node.js:10735:16)
+    at setFsWatchListener (file:///C:/Users/Administrator/Downloads/iria-asuna-birthday-invitation/node_modules/vite/dist/node/chunks/node.js:10777:14)
+    at NodeFsHandler._watchWithNodeFs (file:///C:/Users/Administrator/Downloads/iria-asuna-birthday-invitation/node_modules/vite/dist/node/chunks/node.js:10892:20)
+    at NodeFsHandler._handleFile (file:///C:/Users/Administrator/Downloads/iria-asuna-birthday-invitation/node_modules/vite/dist/node/chunks/node.js:10936:24)
+    at NodeFsHandler._addToNodeFs (file:///C:/Users/Administrator/Downloads/iria-asuna-birthday-invitation/node_modules/vite/dist/node/chunks/node.js:11110:26)
+Emitted 'error' event on FSWatcher instance at:
+    at FSWatcher._handleError (file:///C:/Users/Administrator/Downloads/iria-asuna-birthday-invitation/node_modules/vite/dist/node/chunks/node.js:11912:146)
+    at NodeFsHandler._addToNodeFs (file:///C:/Users/Administrator/Downloads/iria-asuna-birthday-invitation/node_modules/vite/dist/node/chunks/node.js:11115:18) {
+  errno: -4082,
+  syscall: 'watch',
+  code: 'EBUSY',
+  path: 'C:\\Users\\Administrator\\Downloads\\iria-asuna-birthday-invitation\\.vercel\\output\\static\\invitation\\02. What If There Was Pink - The Pirate Fairy Soundtrack - (320 Kbps) (1).mp3',
+  filename: 'C:\\Users\\Administrator\\Downloads\\iria-asuna-birthday-invitation\\.vercel\\output\\static\\invitation\\02. What If There Was Pink - The Pirate Fairy Soundtrack - (320 Kbps) (1).mp3'
+}
+
+Node.js v24.21.0

@@ -23,7 +23,7 @@ export const event = {
   sealLetter: "I",
   ageWord: "One",
   headline: "Turns One",
-  themeName: "Iria’s First Fairy Garden",
+  themeName: "Butterfly Theme",
   pageTitle: "Iria Asuna D. Maramara Turns One",
   pageDescription:
     "You are invited to Iria Asuna’s first birthday — a fairy garden afternoon of tiny wonders, lanterns, and love.",
@@ -44,6 +44,8 @@ export const event = {
   timeLabel: "5:00 PM",
 
   venueName: "Bayfront Hotel",
+  venueArea: "North Reclamation Area",
+  venueHall: "Bantayan Hall",
   venueCity: "Cebu City",
   mapsLink: "https://www.google.com/maps/place/Bayfront+Hotel+Cebu+North+Reclamation/@10.3118471,123.9186312,17z/data=!3m1!4b1!4m9!3m8!1s0x33a99972f04ee017:0x239e29fd87e52e92!5m2!4m1!1i2!8m2!3d10.3118418!4d123.9212061!16s%2Fg%2F1pp2wygm7?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
 
@@ -66,7 +68,7 @@ export const event = {
   whenLabel: "When",
   whereLabel: "Where",
   celebrationLabel: "The Celebration",
-  celebrationLine: "A tiny fairy’s first birthday",
+  celebrationLine: "Butterfly Theme",
 
   countdownEyebrow: "Until the Fairy Bells Ring",
   countdownTitle: "A Little Magic Is Growing",
@@ -86,22 +88,83 @@ export const event = {
   galleryTitle: "Sweet Moments in Bloom",
 
   giftEyebrow: "A Note from the Garden",
-  giftTitle: "Your Presence Is the Loveliest Gift",
+  giftTitle: "A Little Gift Guide for Our Birthday Girl",
   giftBody:
-    "Being with us is already a wonderful gift. Should you wish to bless our little celebrant, any thoughtful present or monetary blessing will be received with so much love.",
+    "Your presence is already the sweetest gift we could ask for as we celebrate our little butterfly turning ONE! 💕",
+  giftIntro: "But if you'd like to bring something for her, here are a few ideas:",
+  giftIdeas: [
+    { emoji: "🧸", label: "Toys", note: "age-appropriate toys, books, blocks, or anything fun" },
+    { emoji: "💰", label: "Money for Her Future", note: "a little something for her future dreams" },
+    { emoji: "👗", label: "Dresses and shoes", note: "cute and comfy outfits" },
+    { emoji: "🍼", label: "Millie Moon Diapers", note: "Medium" },
+    { emoji: "🧺", label: "Tiny Buds", note: "baby laundry essentials" },
+    { emoji: "🧻", label: "Wet Tissues/Wipes", note: "" },
+  ],
+  giftOutro:
+    "And of course, feel free to choose anything you think she'll love! 🎀",
+  giftClosing:
+    "Most importantly, your presence, love, and sharing this special day with us are more than enough. 🥰🦋",
 
   venueEyebrow: "Follow the Garden Path",
-  mapsButton: "Open in Maps",
+  mapsButton: "Open in Map",
 
   dressEyebrow: "Garden Attire",
-  dressTitle: "Pastel Garden Party Best",
-  dressLead:
-    "Soft color, floral details, light fabrics, and easy garden-party styling are warmly encouraged.",
+  dressTitle: "CASUAL / SEMI-FORMAL",
+  dressLead: "Little outfits for a big celebration!",
   dressLooks: [
     { key: "girls", label: "Girls", note: "Pastel party dresses", image: "/invitation/dress-girl.jpg" },
     { key: "boys", label: "Boys", note: "Polo or button-down outfits", image: "/invitation/dress-boy.jpg" },
     { key: "women", label: "Women", note: "Garden-party dresses", image: "/invitation/dress-woman.jpg" },
     { key: "men", label: "Men", note: "Light smart-casual attire", image: "/invitation/dress-man.jpg" },
+  ],
+
+  /* Colour palette — exact hex values supplied by the host. */
+  paletteEyebrow: "Our Palette",
+  paletteTitle: "Butterfly Theme Colours",
+  palette: [
+    { name: "Blush Pink", hex: "#F7B6D2" },
+    { name: "Baby Pink", hex: "#FAD7E8" },
+    { name: "Lavender", hex: "#C8B6E8" },
+    { name: "Lilac", hex: "#B69BCF" },
+    { name: "Pearl White", hex: "#FFF9F5" },
+    { name: "Dusty Rose", hex: "#D99AB8" },
+    { name: "Sage Green", hex: "#B8C9B0" },
+    { name: "Champagne Gold", hex: "#D8C19A" },
+  ],
+
+  /* Guest reminders — verbatim from the host. */
+  remindersEyebrow: "With Love",
+  remindersTitle: "Gentle Reminders",
+  remindersLead: "A Few Gentle Reminders for Our Guests",
+  reminders: [
+    "🧴 Please sanitize your hands before interacting with or holding the birthday girl.",
+    "🤧 Please avoid kissing the baby, especially on her face and hands.",
+    "🦠 If you're feeling unwell, have a fever, cough, colds, or other contagious symptoms, please rest at home and celebrate with us from afar. 💕",
+    "👶 Please be gentle when holding or playing with her. Always ask Mommy or Daddy first.",
+    "🧸 Please keep small objects and choking hazards away from the baby.",
+    "📸 Photos are welcome! Please be mindful of her comfort and let her enjoy her special day.",
+    "🎀 Please let the birthday girl enjoy her cake and presents at her own pace. 😊",
+    "💕 Most importantly, come ready to celebrate, laugh, and make beautiful memories with us!",
+  ],
+
+  /* Program flow — the host supplied the time range and the ordered list. */
+  programEyebrow: "The Celebration",
+  programTitle: "Program Flow",
+  programTime: "5:00 PM – 9:00 PM",
+  program: [
+    "Guest Arrival & Free Play",
+    "Opening Prayer",
+    "Grand Entrance",
+    "Welcome Message",
+    "Fun & Games",
+    "Birthday Wishes",
+    "🎂 Cake Blowing & Pictorial",
+    "Dinner",
+    "🪄 Magic Show",
+    "🫧 Bubble Show",
+    "🪅 Piñata & Pabitin",
+    "Wrap-Up Games",
+    "Thank You & Closing",
   ],
 
   rsvpEyebrow: "Kindly Reply",

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { Music, Music2 } from "lucide-react";
 import { event } from "@/lib/event";
-import { hasReplied, markReplied, repliedName, saveRsvp, type Attendance } from "@/lib/rsvp";
+import { saveRsvp, type Attendance } from "@/lib/rsvp";
 import { submitRsvp } from "@/lib/host-data";
 import { createGardenAudio } from "@/lib/garden-audio";
 import { loadTimerSettings } from "@/lib/countdown-settings";
@@ -20,6 +20,89 @@ function ButterflyIcon() {
     <svg viewBox="0 0 64 48" aria-hidden="true">
       <use href="#icon-butterfly" />
     </svg>
+  );
+}
+
+/** Upper bound for one headcount on the invitation form (the server allows more). */
+const MAX_HEADCOUNT = 10;
+
+/**
+ * Strip emoji from a host-supplied reminder string.
+ *
+ * The reminders carry emoji at both ends ("🧴 Please sanitize…💕"). Both are
+ * removed so the rendered list is emoji-free and each row is marked by the
+ * design's own ornament instead. The wording in between is returned exactly as
+ * supplied, with its punctuation and spacing intact.
+ *
+ * Removal is by code-point test rather than a fixed pattern, so it also clears
+ * variation selectors and ZWJ sequences, and any emoji the host adds later.
+ */
+function stripEmoji(value: string): string {
+  return value
+    // Drop pictographs, their variation selectors, and any joined sequences.
+    .replace(/\p{Extended_Pictographic}[\uFE0F\u200D\p{Extended_Pictographic}\uFE0F]*/gu, "")
+    // Collapse the space left behind, and trim the ends.
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/**
+ * One `− 0 +` headcount row. Shared shape between the guest RSVP form and the
+ * Host Desk edit dialog so both read as the same control.
+ *
+ * `value` is clamped to 0…MAX_HEADCOUNT and never goes negative, however many
+ * times minus is pressed.
+ */
+function HeadcountStepper({
+  id,
+  label,
+  value,
+  onChange,
+  max = MAX_HEADCOUNT,
+  disabled = false,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  onChange: (next: number) => void;
+  max?: number;
+  disabled?: boolean;
+}) {
+  const set = (next: number) => onChange(Math.min(Math.max(Math.trunc(next), 0), max));
+  return (
+    <div className="rsvp-stepper">
+      <span className="rsvp-stepper__label" id={`${id}-label`}>
+        {label}
+      </span>
+      <div className="rsvp-stepper__controls">
+        <button
+          type="button"
+          className="rsvp-stepper__btn"
+          aria-label={`Remove one ${label.toLowerCase()}`}
+          disabled={disabled || value <= 0}
+          onClick={() => set(value - 1)}
+        >
+          −
+        </button>
+        <output
+          className="rsvp-stepper__value"
+          id={id}
+          aria-labelledby={`${id}-label`}
+          aria-live="polite"
+        >
+          {value}
+        </output>
+        <button
+          type="button"
+          className="rsvp-stepper__btn"
+          aria-label={`Add one ${label.toLowerCase()}`}
+          disabled={disabled || value >= max}
+          onClick={() => set(value + 1)}
+        >
+          +
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -182,11 +265,13 @@ export function InvitationApp() {
   const [hunt, setHunt] = useState(0);
   const [rsvpDone, setRsvpDone] = useState(false);
   const [rsvpStatus, setRsvpStatus] = useState("");
-  // Read once on mount: a guest who already replied on this device is shown the
-  // "thanks again" note instead of the form, so they cannot double-submit.
-  const [alreadyReplied, setAlreadyReplied] = useState(false);
-  const [priorName, setPriorName] = useState("");
   const [wand, setWand] = useState({ x: 0, y: 0, on: false });
+  // Guest-side headcount. Held in state (not just the form) so the −/+ steppers
+  // and the live "Total guests" line re-render immediately; the values are read
+  // back out of state on submit and sent to the server as-is.
+  const [adults, setAdults] = useState(0);
+  const [kids, setKids] = useState(0);
+  const [attending, setAttending] = useState(false);
   const audio = useRef<ReturnType<typeof createGardenAudio> | null>(null);
   const glitterRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -210,13 +295,19 @@ export function InvitationApp() {
   }, []);
 
   useEffect(() => {
-    // One reply per device: if this browser already sent one, skip straight to the
-    // thank-you state so the form is never offered twice.
-    if (hasReplied()) {
-      setAlreadyReplied(true);
-      setRsvpDone(true);
-      setPriorName(repliedName());
-    }
+    /*
+     * Intentionally nothing here.
+     *
+     * A reply used to be remembered per device in `localStorage` and this effect
+     * would jump straight to the thank-you note on any later visit, permanently
+     * hiding the form. On a public birthday invitation that is wrong: a family
+     * passing one phone around, or a shared tablet at the party, could only ever
+     * send a single reply.
+     *
+     * The form is now always offered on open/refresh. A guest sees the
+     * confirmation only as the direct result of submitting (see `onRsvp`), and
+     * every submission is an independent insert — no reply is ever overwritten.
+     */
   }, []);
 
   useEffect(() => {
@@ -280,15 +371,19 @@ export function InvitationApp() {
     const data = new FormData(form);
     const guestName = String(data.get("guestName") ?? "").trim();
     const attendance = String(data.get("attendance") ?? "") as Attendance;
-    const attendees = Number(data.get("attendees") ?? 0);
     const contact = String(data.get("contact") ?? "").trim();
     const message = String(data.get("message") ?? "").trim();
+    const isAttending = attendance === "attending";
+    // A declined reply stores no headcount: the split belongs to guests who are
+    // actually coming, and it must never reach the "Guests coming" total.
+    const adultCount = isAttending ? adults : 0;
+    const kidCount = isAttending ? kids : 0;
+    const totalGuests = adultCount + kidCount;
 
     const errors: Record<string, string> = {};
     if (guestName.length < 2) errors.guestName = "Please enter the guest name.";
     if (attendance !== "attending" && attendance !== "not-attending") errors.attendance = "Please choose an attendance response.";
-    if (!Number.isInteger(attendees) || attendees < 0 || attendees > 10) errors.attendees = "Enter a number from 0 to 10.";
-    if (attendance === "attending" && attendees < 1) errors.attendees = "Attending guests must include at least one person.";
+    if (isAttending && totalGuests < 1) errors.headcount = "Please add at least one adult or kid.";
     if (contact.replace(/\D/g, "").length < 7) errors.contact = "Please enter a valid contact number.";
 
     form.querySelectorAll(".field").forEach((field) => field.classList.remove("has-error"));
@@ -296,11 +391,17 @@ export function InvitationApp() {
       node.textContent = "";
     });
     Object.entries(errors).forEach(([name, msg]) => {
-      const input = form.elements.namedItem(name);
+      // The headcount error belongs to the Adults/Kids field group, which is not a
+      // single named form control (it is two steppers), so it is targeted by id.
       const field =
-        input instanceof RadioNodeList
-          ? form.querySelector('input[name="attendance"]')?.closest(".field")
-          : (input as HTMLElement | null)?.closest(".field");
+        name === "headcount"
+          ? form.querySelector("#rsvpHeadcount")?.closest(".field")
+          : (() => {
+              const input = form.elements.namedItem(name);
+              return input instanceof RadioNodeList
+                ? form.querySelector('input[name="attendance"]')?.closest(".field")
+                : (input as HTMLElement | null)?.closest(".field");
+            })();
       field?.classList.add("has-error");
       const err = field?.querySelector(".field-error");
       if (err) err.textContent = msg;
@@ -316,18 +417,31 @@ export function InvitationApp() {
       // Sent to the invitation's own server so the organizers see it in the Host
       // Desk. Guests need no account; this endpoint only appends a reply.
       await submitRsvp({
-        data: { guestName, attendance, attendees, contact, message },
+        data: {
+          guestName,
+          attendance,
+          adults: adultCount,
+          kids: kidCount,
+          contact,
+          message,
+        },
       });
     } catch {
       // Offline / server hiccup: keep the guest's own copy so their reply is not
       // silently lost, and still let them through to the thank-you note.
-      saveRsvp({ guestName, attendance, attendees, contact, message });
+      saveRsvp({
+        guestName,
+        attendance,
+        adults: adultCount,
+        kids: kidCount,
+        attendees: totalGuests,
+        contact,
+        message,
+      });
     }
-    // Remember on this device that a reply was sent, so returning guests see the
-    // thank-you note rather than the form again.
-    markReplied(guestName);
-    setAlreadyReplied(true);
-    setPriorName(guestName);
+    // Show the confirmation as the direct result of this submission. Nothing is
+    // written to localStorage, so reopening or refreshing the invitation always
+    // offers the form again and the next guest on this device can reply too.
     setRsvpDone(true);
     setRsvpStatus("");
     const panel = form.getBoundingClientRect();
@@ -336,7 +450,7 @@ export function InvitationApp() {
       finalSceneRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       finalSceneRef.current?.focus();
     });
-  }, []);
+  }, [adults, kids]);
 
   return (
     <div
@@ -557,7 +671,8 @@ export function InvitationApp() {
                 <span className="signpost__icon">❧</span>
                 <p className="signpost__label">{event.whereLabel}</p>
                 <h3>{event.venueName}</h3>
-                <p>{event.venueCity}</p>
+                <p>{event.venueHall}</p>
+                <p>{event.venueArea}</p>
               </article>
               <article className="signpost signpost--theme reveal">
                 <span className="signpost__icon">❀</span>
@@ -703,44 +818,153 @@ export function InvitationApp() {
           </section>
 
           <section className="gift-scene motion-scene" aria-labelledby="giftTitle">
-            <div className="gift-note reveal">
-              <span className="gift-note__seal" aria-hidden="true">
-                {event.sealLetter}
-              </span>
-              <p className="eyebrow">{event.giftEyebrow}</p>
-              <h2 id="giftTitle">{event.giftTitle}</h2>
-              <p>{event.giftBody}</p>
+            {/*
+             * "A Note from the Garden" — minimal editorial treatment.
+             * Typography and whitespace carry the section: eyebrow → display
+             * title → short gold rule → prose → a two-column list of the six
+             * gifts on hairline rules → italic sign-off. No decoration.
+             */}
+            <div className="gift-letter reveal">
+              <header className="gift-letter__head">
+                <p className="gift-letter__eyebrow">{event.giftEyebrow}</p>
+                <h2 id="giftTitle" className="gift-letter__title">
+                  {event.giftTitle}
+                </h2>
+                <span className="gift-letter__rule" aria-hidden="true" />
+                <p className="gift-letter__body">{event.giftBody}</p>
+                <p className="gift-letter__intro">{event.giftIntro}</p>
+              </header>
+
+              {/* Gifts presented as a clean editorial list — no vine, no tags. */}
+              <div className="gift-list">
+                <ul className="gift-list__items">
+                  {event.giftIdeas.map((idea, i) => (
+                    <li className="gift-item" key={idea.label}>
+                      <span className="gift-item__index" aria-hidden="true">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="gift-item__text">
+                        <strong>{idea.label}</strong>
+                        {idea.note ? <span className="gift-item__note">{idea.note}</span> : null}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <footer className="gift-letter__closing">
+                <p className="gift-letter__outro">{event.giftOutro}</p>
+                <span className="gift-letter__closing-rule" aria-hidden="true" />
+                <p className="gift-letter__final">{event.giftClosing}</p>
+              </footer>
             </div>
           </section>
 
+          {/*
+           * Location — "Follow the Garden Path".
+           * Composed as a journey rather than a card: a fine gold path curves
+           * down through the section, past soft botanical silhouettes, to a
+           * destination marker above the venue's editorial nameplate.
+           */}
           <section className="venue-scene motion-scene" id="venue" aria-labelledby="venueTitle">
-            <div className="venue-scene__image" data-parallax data-parallax-speed="0.09" aria-hidden="true" />
+            <div className="venue-scene__wash" data-parallax data-parallax-speed="0.06" aria-hidden="true" />
+
+            {/* Botanical silhouettes framing the path — linework only, very faint. */}
+            <span className="venue-scene__frond venue-scene__frond--left" aria-hidden="true">
+              <svg viewBox="0 0 120 200" fill="none" focusable="false">
+                <path d="M60 200C60 150 50 96 26 44" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                <path d="M52 150c-16-6-26-18-30-34 16 1 27 12 30 34Z" fill="currentColor" opacity=".45" />
+                <path d="M48 118c-15-6-24-17-27-32 15 1 25 11 27 32Z" fill="currentColor" opacity=".35" />
+                <path d="M42 84c-13-6-21-16-23-29 13 1 22 10 23 29Z" fill="currentColor" opacity=".28" />
+                <path d="M56 168c14-5 22-15 25-29-14 1-23 10-25 29Z" fill="currentColor" opacity=".22" />
+              </svg>
+            </span>
+            <span className="venue-scene__frond venue-scene__frond--right" aria-hidden="true">
+              <svg viewBox="0 0 120 200" fill="none" focusable="false">
+                <path d="M60 200C60 150 70 96 94 44" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                <path d="M68 150c16-6 26-18 30-34-16 1-27 12-30 34Z" fill="currentColor" opacity=".45" />
+                <path d="M72 118c15-6 24-17 27-32-15 1-25 11-27 32Z" fill="currentColor" opacity=".35" />
+                <path d="M78 84c13-6 21-16 23-29-13 1-22 10-23 29Z" fill="currentColor" opacity=".28" />
+                <path d="M64 168c-14-5-22-15-25-29 14 1 23 10 25 29Z" fill="currentColor" opacity=".22" />
+              </svg>
+            </span>
+
             <div className="venue-scene__inner">
-              <p className="eyebrow venue-scene__eyebrow reveal">{event.venueEyebrow}</p>
-              <div className="venue-card reveal">
-                <span className="venue-card__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" focusable="false">
-                    <path
-                      d="M12 21.5s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="12" cy="10.2" r="2.6" stroke="currentColor" strokeWidth="1.6" />
-                  </svg>
-                </span>
-                <h2 className="venue-card__name" id="venueTitle">
+              <header className="venue-scene__head reveal">
+                <p className="eyebrow venue-scene__eyebrow">{event.venueEyebrow}</p>
+              </header>
+
+              {/*
+               * The path: a single curve drawn from the label down to the
+               * destination marker, so the eye travels toward the venue.
+               */}
+              <div className="venue-path" aria-hidden="true">
+                <svg viewBox="0 0 240 420" fill="none" preserveAspectRatio="xMidYMin meet" focusable="false">
+                  <path
+                    className="venue-path__line"
+                    d="M120 6C120 60 74 84 74 140s62 74 62 128-58 62-58 118"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeDasharray="1 7"
+                  />
+                  {/* Small stones set along the path. */}
+                  <circle className="venue-path__stone" cx="104" cy="60" r="2.4" fill="currentColor" />
+                  <circle className="venue-path__stone" cx="80" cy="112" r="2" fill="currentColor" />
+                  <circle className="venue-path__stone" cx="122" cy="176" r="2.4" fill="currentColor" />
+                  <circle className="venue-path__stone" cx="134" cy="238" r="2" fill="currentColor" />
+                  <circle className="venue-path__stone" cx="98" cy="300" r="2.4" fill="currentColor" />
+                  <circle className="venue-path__stone" cx="80" cy="352" r="2" fill="currentColor" />
+                </svg>
+              </div>
+
+              {/* Destination marker — the path arrives here. */}
+              <div className="venue-pin reveal" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                  <path
+                    d="M12 21.5s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="12" cy="10.2" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              </div>
+
+              {/* The venue nameplate. */}
+              <div className="venue-plate reveal">
+                <span className="venue-plate__frame" aria-hidden="true" />
+                <h2 className="venue-plate__name" id="venueTitle">
                   {event.venueName}
                 </h2>
-                <p className="venue-card__city">{event.venueCity}</p>
-                <span className="venue-card__divider" aria-hidden="true" />
+
+                {/* Bantayan Hall — the specific venue guests must find. */}
+                <p className="venue-plate__hall">
+                  <span className="venue-plate__hall-rule" aria-hidden="true" />
+                  <span className="venue-plate__hall-name">{event.venueHall}</span>
+                  <span className="venue-plate__hall-rule" aria-hidden="true" />
+                </p>
+
+                <p className="venue-plate__area">{event.venueArea}</p>
+
                 <a
-                  className="fg-btn fg-btn--solid venue-card__button"
+                  className="venue-action"
                   href={event.mapsLink}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {event.mapsButton}
+                  <span className="venue-action__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                      <path
+                        d="M12 21.5s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinejoin="round"
+                      />
+                      <circle cx="12" cy="10.2" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+                    </svg>
+                  </span>
+                  <span className="venue-action__label">{event.mapsButton}</span>
                 </a>
               </div>
             </div>
@@ -763,6 +987,95 @@ export function InvitationApp() {
                 </figure>
               ))}
             </div>
+
+            {/* Theme + exact colour palette supplied by the host. */}
+            <div className="palette-block reveal">
+              <div className="palette-block__heading">
+                <p className="eyebrow">{event.paletteEyebrow}</p>
+                <h3>{event.paletteTitle}</h3>
+              </div>
+              <ul className="palette-grid">
+                {event.palette.map((swatch) => (
+                  <li className="palette-swatch" key={swatch.hex}>
+                    <span
+                      className="palette-swatch__chip"
+                      style={{ background: swatch.hex }}
+                      aria-hidden="true"
+                    />
+                    <strong>{swatch.name}</strong>
+                    <span className="palette-swatch__hex">{swatch.hex}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {/*
+           * Guest guide — the host's gentle reminders and the evening's running
+           * order presented as one spread: two facing panels under a shared
+           * opener, so the section reads as a single page of the invitation
+           * rather than two stacked lists.
+           */}
+          <section className="guest-guide motion-scene" id="reminders" aria-labelledby="remindersTitle">
+            <div className="guest-guide__inner">
+              {/*
+               * Shared opener. The eyebrow here is a section mark, deliberately
+               * NOT either panel's name — the panel headers below carry those, so
+               * nothing on this spread is stated twice.
+               */}
+              <header className="guest-guide__opener reveal">
+                <p className="eyebrow guest-guide__eyebrow">Good to Know</p>
+                <h2 id="remindersTitle" className="guest-guide__title">
+                  {event.remindersTitle}
+                </h2>
+                <p className="guest-guide__lead">{event.remindersLead}</p>
+                <span className="guest-guide__rule" aria-hidden="true" />
+              </header>
+
+              <div className="guest-guide__spread">
+                {/* Left panel — the reminders.
+                 *
+                 * The host's reminder strings lead with their own emoji. Rather
+                 * than printing those emoji, the prefix is stripped and each row
+                 * is marked by an evenly-numbered ornament drawn in CSS, so the
+                 * list reads as stationery rather than a chat thread. The
+                 * wording itself is untouched.
+                 */}
+                <div className="guide-panel guide-panel--notes">
+                  <h3 className="guide-panel__label">
+                    <span className="guide-panel__label-text">Gentle Reminders</span>
+                  </h3>
+                  <ul className="reminders__list">
+                    {event.reminders.map((reminder) => (
+                      <li className="reminder reveal" key={reminder}>
+                        <span className="reminder__marker" aria-hidden="true" />
+                        <span className="reminder__text">{stripEmoji(reminder)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Right panel — the programme. */}
+                <div className="guide-panel guide-panel--program">
+                  <div className="guide-panel__head">
+                    <div className="guide-panel__titles">
+                      <p className="guide-panel__overline">{event.programEyebrow}</p>
+                      <h3 className="guide-panel__label" id="programTitle">
+                        <span className="guide-panel__label-text">{event.programTitle}</span>
+                      </h3>
+                    </div>
+                    <p className="program__time">{event.programTime}</p>
+                  </div>
+                  <ul className="program__list">
+                    {event.program.map((item) => (
+                      <li className="program__item reveal" key={item}>
+                        <span className="program__label">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
           </section>
 
           <section className="rsvp motion-scene" id="rsvp" aria-labelledby="rsvpTitle" data-no-glitter="true">
@@ -782,18 +1095,53 @@ export function InvitationApp() {
                   <fieldset className="field field--choice">
                     <legend>Attendance</legend>
                     <label>
-                      <input type="radio" name="attendance" value="attending" required /> Joyfully attending
+                      <input
+                        type="radio"
+                        name="attendance"
+                        value="attending"
+                        required
+                        checked={attending}
+                        onChange={() => setAttending(true)}
+                      />{" "}
+                      Joyfully attending
                     </label>
                     <label>
-                      <input type="radio" name="attendance" value="not-attending" required /> Sending fairy wishes
+                      <input
+                        type="radio"
+                        name="attendance"
+                        value="not-attending"
+                        required
+                        checked={!attending}
+                        onChange={() => setAttending(false)}
+                      />{" "}
+                      Sending fairy wishes
                     </label>
                     <small className="field-error" aria-live="polite" />
                   </fieldset>
-                  <div className="field">
-                    <label htmlFor="attendees">Number of Attendees</label>
-                    <input id="attendees" name="attendees" type="number" min={0} max={10} defaultValue={1} inputMode="numeric" required />
-                    <small className="field-error" aria-live="polite" />
-                  </div>
+                  {/* The headcount only applies to a party that is coming, so it
+                      appears with the attending choice — the same way the old
+                      single "Number of Attendees" field read. */}
+                  {attending && (
+                    <div className="field" id="rsvpHeadcount">
+                      <span className="field-label">Guests Coming</span>
+                      <HeadcountStepper
+                        id="guestAdults"
+                        label="Adults"
+                        value={adults}
+                        onChange={setAdults}
+                      />
+                      <HeadcountStepper
+                        id="guestKids"
+                        label="Kids"
+                        value={kids}
+                        onChange={setKids}
+                      />
+                      <p className="headcount-total">
+                        Total guests: <strong>{adults + kids}</strong>
+                      </p>
+                      <small className="field-error" aria-live="polite" />
+                    </div>
+                  )}
                   <div className="field">
                     <label htmlFor="contact">Contact Number</label>
                     <input id="contact" name="contact" type="tel" autoComplete="tel" inputMode="tel" placeholder="09xx xxx xxxx" required maxLength={20} />
@@ -815,14 +1163,7 @@ export function InvitationApp() {
                 <div className="rsvp-success" tabIndex={-1}>
                   <ButterflyIcon />
                   <h3>{event.rsvpSuccessTitle}</h3>
-                  {/* A returning guest (already replied on this device) gets a
-                      slightly different note, so it reads as a recognition rather
-                      than as if their earlier reply was just sent again. */}
-                  <p>
-                    {alreadyReplied && priorName
-                      ? `Your reply is already with us, ${priorName}. No need to send it again.`
-                      : event.rsvpSuccessBody}
-                  </p>
+                  <p>{event.rsvpSuccessBody}</p>
                 </div>
               )}
             </div>

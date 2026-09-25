@@ -1259,112 +1259,394 @@
   }
 }
 
-/* Gift */
+/* ── Gift — "A Note from the Garden" ─────────────────────────────
+ * Minimal editorial treatment. No vine, no tags, no decorative glyphs: the
+ * section is carried by typography and whitespace alone.
+ *
+ * Hierarchy is doing the work — a small-caps eyebrow, a restrained display
+ * title, a short gold rule, generous measure on the prose, then the six gifts
+ * as a two-column list of hairline-separated rows. Gold is the only accent;
+ * everything else is ink on cream.
+ */
 .gift-scene {
-  padding: clamp(4rem, 9vw, 7rem) 1.2rem;
-  background: #fff8f2;
-}
-.gift-note {
-  width: min(92%, 640px);
-  margin: 0 auto;
-  padding: 3.2rem 1.6rem 2.4rem;
-  text-align: center;
-  background: linear-gradient(180deg, #fffdfb, #fff4f0);
-  border-radius: 32px;
-  box-shadow: 0 24px 50px rgba(72, 46, 70, 0.1);
   position: relative;
-}
-.gift-note__seal {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 56px;
-  height: 56px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  color: white;
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  background: radial-gradient(circle at 35% 30%, #f9d7ff, #a56cc3 45%, #674079 100%);
-  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.7);
+  padding: clamp(4.5rem, 10vw, 7.5rem) 1.25rem clamp(4rem, 9vw, 6.5rem);
+  background: var(--color-cream);
 }
 
-/* Venue — soft pastel garden gradient, very slow drift */
+.gift-letter {
+  position: relative;
+  z-index: 1;
+  width: min(92%, 1040px);
+  margin: 0 auto;
+}
+
+.gift-letter__head {
+  position: relative;
+  width: min(100%, 660px);
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Small-caps eyebrow, letterspaced. */
+.gift-letter__eyebrow {
+  margin: 0 0 1.1rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.36em;
+  font-weight: 700;
+  color: var(--color-lavender);
+}
+
+/* Display title — the single largest type in the section, and nothing else
+ * competes with it. */
+.gift-letter__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 5vw, 2.7rem);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: 0.004em;
+  color: #49304f;
+  text-wrap: balance;
+}
+
+/* A single short gold rule under the title. */
+.gift-letter__rule {
+  display: block;
+  width: 54px;
+  height: 1px;
+  margin: clamp(1.3rem, 3.5vw, 1.7rem) auto 0;
+  background: var(--color-gold);
+  opacity: 0.75;
+}
+
+.gift-letter__body {
+  margin: clamp(1.4rem, 3.5vw, 1.8rem) 0 0;
+  font-size: clamp(1rem, 2.4vw, 1.08rem);
+  line-height: 1.75;
+  color: #5b3a62;
+  text-wrap: pretty;
+}
+
+.gift-letter__intro {
+  margin: 1.15rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.8vw, 1.2rem);
+  font-style: italic;
+  color: color-mix(in oklab, var(--color-lavender) 55%, #5b3a62);
+}
+
+/* ── The gift list ───────────────────────────────────────────────
+ * Six items as two aligned columns of hairline rows. Read top-to-bottom down
+ * each column, which keeps the scan order tidy without a boxed grid.
+ */
+.gift-list {
+  margin: clamp(2.6rem, 6vw, 3.6rem) auto 0;
+  width: min(100%, 860px);
+}
+
+.gift-list__items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Row gap is generous: the rules carry the rhythm, so no boxes are needed. */
+  gap: 0 clamp(2.5rem, 7vw, 5.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gift-item {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0 0.85rem;
+  padding: 1.15rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--color-ink) 9%, transparent);
+}
+/* The final row of each column closes with a rule, so both columns read as
+ * complete lists rather than trailing off. */
+.gift-item:nth-last-child(-n + 2) {
+  border-bottom: 1px solid color-mix(in oklab, var(--color-ink) 9%, transparent);
+}
+
+.gift-item__index {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.gift-item__text {
+  display: block;
+}
+.gift-item__text strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.6vw, 1.26rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: #4b2f52;
+}
+.gift-item__note {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.87rem;
+  line-height: 1.55;
+  color: #6a4a70;
+}
+
+/* ── Closing ────────────────────────────────────────────────────── */
+.gift-letter__closing {
+  width: min(100%, 640px);
+  margin: clamp(2.4rem, 6vw, 3.2rem) auto 0;
+  text-align: center;
+}
+
+.gift-letter__outro {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.8vw, 1.2rem);
+  font-style: italic;
+  line-height: 1.6;
+  color: color-mix(in oklab, var(--color-lavender) 50%, #5b3a62);
+}
+
+.gift-letter__closing-rule {
+  display: block;
+  width: 40px;
+  height: 1px;
+  margin: clamp(1.2rem, 3vw, 1.5rem) auto;
+  background: color-mix(in oklab, var(--color-gold) 70%, transparent);
+}
+
+.gift-letter__final {
+  margin: 0;
+  font-size: clamp(0.92rem, 2.4vw, 1rem);
+  line-height: 1.72;
+  color: #6a4a70;
+  text-wrap: pretty;
+}
+
+/* Staggered settle-in for the rows. */
+.gift-item {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.gift-scene.is-active .gift-item {
+  opacity: 1;
+  transform: none;
+}
+.gift-scene.is-active .gift-item:nth-child(1) { transition-delay: 60ms; }
+.gift-scene.is-active .gift-item:nth-child(2) { transition-delay: 120ms; }
+.gift-scene.is-active .gift-item:nth-child(3) { transition-delay: 180ms; }
+.gift-scene.is-active .gift-item:nth-child(4) { transition-delay: 240ms; }
+.gift-scene.is-active .gift-item:nth-child(5) { transition-delay: 300ms; }
+.gift-scene.is-active .gift-item:nth-child(6) { transition-delay: 360ms; }
+
+/* Tablet — keep two columns, tighten the gutter. */
+@media (max-width: 900px) {
+  .gift-list__items {
+    gap: 0 clamp(1.75rem, 5vw, 3rem);
+  }
+}
+
+/* Mobile — a single column; the rules run edge to edge and the rows breathe. */
+@media (max-width: 640px) {
+  .gift-list__items {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .gift-item {
+    grid-template-columns: 2.1rem minmax(0, 1fr);
+    gap: 0 0.7rem;
+    padding: 1.05rem 0;
+  }
+  /* With one column there is only one last row. */
+  .gift-item:nth-last-child(-n + 2) {
+    border-bottom: none;
+  }
+  .gift-item:last-child {
+    border-bottom: 1px solid color-mix(in oklab, var(--color-ink) 9%, transparent);
+  }
+}
+
+/* ── Location — "Follow the Garden Path" ─────────────────────────
+ * Composition: a garden journey. A fine dashed gold path curves down through
+ * the section past faint botanical silhouettes, arriving at a destination pin
+ * above the venue's nameplate — so the eye literally travels toward the venue.
+ *
+ * The background is a soft garden wash (blush → lavender → sage → pearl) whose
+ * drift is so slow it reads as atmosphere, not animation. Palette discipline:
+ * sage only in the fronds, gold only along the path and the action, lavender
+ * for supporting type, ink for the names.
+ */
 .venue-scene {
   position: relative;
   display: grid;
   place-items: center;
-  padding: clamp(5rem, 11vw, 8.5rem) 1.25rem clamp(4.5rem, 10vw, 7.5rem);
+  padding: clamp(4.5rem, 10vw, 8rem) 1.25rem clamp(4.5rem, 10vw, 7.5rem);
   overflow: hidden;
   text-align: center;
   isolation: isolate;
-  background: #fbf4fb;
+  background: #fdf7f8;
 }
 
-/* Slowly breathing pastel gradient */
-.venue-scene__image {
+/* Slowly breathing pastel garden wash. */
+.venue-scene__wash {
   position: absolute;
   inset: -18%;
   z-index: 0;
+  pointer-events: none;
   background:
-    radial-gradient(38% 46% at 22% 28%, rgba(255, 214, 235, 0.95) 0%, rgba(255, 214, 235, 0) 70%),
-    radial-gradient(36% 44% at 78% 22%, rgba(212, 226, 255, 0.9) 0%, rgba(212, 226, 255, 0) 70%),
-    radial-gradient(42% 50% at 70% 82%, rgba(255, 236, 199, 0.9) 0%, rgba(255, 236, 199, 0) 72%),
-    radial-gradient(44% 52% at 26% 78%, rgba(214, 244, 224, 0.92) 0%, rgba(214, 244, 224, 0) 72%),
-    radial-gradient(40% 48% at 50% 50%, rgba(230, 216, 255, 0.9) 0%, rgba(230, 216, 255, 0) 74%),
-    linear-gradient(158deg, #fdf3f8 0%, #f6f1fd 34%, #f1f9f4 66%, #fdf6ee 100%);
-  filter: saturate(1.03);
-  animation: venueDrift 34s ease-in-out infinite alternate;
+    radial-gradient(38% 46% at 22% 24%, rgba(255, 214, 235, 0.7) 0%, rgba(255, 214, 235, 0) 70%),
+    radial-gradient(36% 44% at 80% 20%, rgba(224, 216, 255, 0.62) 0%, rgba(224, 216, 255, 0) 70%),
+    radial-gradient(44% 50% at 74% 84%, rgba(226, 244, 230, 0.6) 0%, rgba(226, 244, 230, 0) 72%),
+    radial-gradient(42% 48% at 24% 80%, rgba(255, 241, 214, 0.58) 0%, rgba(255, 241, 214, 0) 72%),
+    linear-gradient(162deg, #fef8fb 0%, #f9f4fe 38%, #f5fbf6 68%, #fdf8f0 100%);
+  animation: venueDrift 38s ease-in-out infinite alternate;
   will-change: transform;
 }
 
-/* Very faint glow drifting over the gradient, to keep the section from feeling flat */
+/* One very soft highlight so the wash never looks flat. */
 .venue-scene::before {
   content: "";
   position: absolute;
-  inset: -45%;
+  inset: -40%;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(30% 30% at 40% 40%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 70%);
+  background: radial-gradient(30% 30% at 42% 38%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
   mix-blend-mode: soft-light;
-  animation: venueHalo 26s ease-in-out infinite alternate;
+  animation: venueHalo 30s ease-in-out infinite alternate;
   will-change: transform, opacity;
 }
 
-/* Very soft garden texture sitting on top of the gradient */
-.venue-scene__inner::before {
-  content: "";
+/*
+ * Botanical fronds framing the path — sage linework, deliberately restrained.
+ * Anchored to the lower third of the section and rotated slightly inward so
+ * they read as growth along the path rather than a border at the page edge.
+ */
+.venue-scene__frond {
   position: absolute;
-  inset: -18vmax -12vmax;
-  z-index: -1;
+  bottom: -2%;
+  z-index: 1;
+  width: clamp(80px, 15vw, 190px);
+  color: var(--color-moss);
+  opacity: 0.38;
   pointer-events: none;
-  opacity: 0.5;
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1.6px, rgba(255, 255, 255, 0) 2px),
-    radial-gradient(circle, rgba(158, 120, 199, 0.28) 0 1.2px, rgba(158, 120, 199, 0) 2px),
-    radial-gradient(circle, rgba(255, 224, 180, 0.4) 0 1.8px, rgba(255, 224, 180, 0) 2.4px);
-  background-size: 190px 190px, 260px 260px, 330px 330px;
-  background-position: 0 0, 90px 130px, 170px 40px;
-  animation: venueFaeShift 44s linear infinite;
-  will-change: transform;
+}
+.venue-scene__frond svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 6px 14px rgba(126, 170, 136, 0.16));
+}
+.venue-scene__frond--left {
+  left: clamp(0.5rem, 3vw, 3.5rem);
+  transform: rotate(-4deg);
+}
+.venue-scene__frond--right {
+  right: clamp(0.5rem, 3vw, 3.5rem);
+  transform: rotate(4deg) scaleX(-1);
 }
 
 .venue-scene__inner {
   position: relative;
   z-index: 2;
-  width: min(100%, 520px);
+  width: min(100%, 560px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(1.4rem, 4.5vw, 2.1rem);
 }
 
 .venue-scene__eyebrow {
   margin: 0;
   color: #8c548f;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/*
+ * Slow entrance: the path and pin settle first, then the plate rises gently —
+ * so the eye is led to the venue rather than everything appearing at once.
+ * Keyed off the scene's `.is-active` class, which useSceneActivity toggles, and
+ * disabled wholesale under prefers-reduced-motion below.
+ */
+.venue-pin,
+.venue-plate {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 800ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.venue-scene.is-active .venue-pin {
+  opacity: 1;
+  transform: none;
+  transition-delay: 180ms;
+}
+.venue-scene.is-active .venue-plate {
+  opacity: 1;
+  transform: none;
+  transition-delay: 300ms;
+}
+
+/* ── The path ─────────────────────────────────────────────────── */
+.venue-path {
+  width: clamp(120px, 26vw, 168px);
+  margin: clamp(0.9rem, 2.6vw, 1.3rem) auto 0;
+  color: var(--color-gold);
+  opacity: 0.72;
+}
+.venue-path svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Stones fade in one after another as the section scrolls into view, so the
+ * path appears to be walked rather than simply switched on. */
+.venue-path__stone {
+  opacity: 0;
+}
+.venue-scene.is-active .venue-path__stone {
+  animation: venueStoneIn 900ms ease-out forwards;
+}
+.venue-scene.is-active .venue-path__stone:nth-of-type(1) { animation-delay: 120ms; }
+.venue-scene.is-active .venue-path__stone:nth-of-type(2) { animation-delay: 260ms; }
+.venue-scene.is-active .venue-path__stone:nth-of-type(3) { animation-delay: 400ms; }
+.venue-scene.is-active .venue-path__stone:nth-of-type(4) { animation-delay: 540ms; }
+.venue-scene.is-active .venue-path__stone:nth-of-type(5) { animation-delay: 680ms; }
+.venue-scene.is-active .venue-path__stone:nth-of-type(6) { animation-delay: 820ms; }
+
+/* Destination pin where the path arrives. */
+.venue-pin {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin: calc(clamp(0.9rem, 2.6vw, 1.3rem) * -1) auto 0;
+  border-radius: 999px;
+  color: #7d4f9c;
+  background: linear-gradient(155deg, #fffdfb, #fbe9f4 58%, #ece2ff);
+  box-shadow:
+    0 0 0 5px rgba(255, 253, 249, 0.85),
+    0 10px 24px -12px rgba(105, 68, 116, 0.5);
+}
+.venue-pin svg {
+  width: 22px;
+  height: 22px;
+}
+
+@keyframes venueStoneIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes venueDrift {
@@ -1390,17 +1672,7 @@
   }
 }
 
-@keyframes venueFaeShift {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-190px, -190px, 0);
-  }
-}
-
-/* Dress */
-.dress-code {
+/* Dress */.dress-code {
   padding: clamp(5rem, 11vw, 9rem) 0;
   background: linear-gradient(180deg, #fff9f2, #f3e8f6);
 }
@@ -1535,6 +1807,94 @@
 .field.has-error input,
 .field.has-error textarea {
   border-color: #a43d5c;
+}
+
+/* Headcount: Adults / Kids steppers + live total.
+   Built from the same tokens as the rest of the panel (field label colour, the
+   `.field--choice` row background, the field radius and the lavender focus ring)
+   so it reads as part of the original form rather than an added control. */
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b538e;
+}
+.rsvp-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 48px;
+  padding: 0.35rem 0.6rem 0.35rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 14%, transparent);
+  background: #fffaf6;
+}
+.rsvp-stepper__label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+.rsvp-stepper__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.rsvp-stepper__btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 16%, transparent);
+  border-radius: 12px;
+  background: #fff4ea;
+  color: #8b538e;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+  transition: background 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
+}
+.rsvp-stepper__btn:hover:not(:disabled) {
+  background: var(--color-blush-soft);
+}
+.rsvp-stepper__btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.rsvp-stepper__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.rsvp-stepper__btn:focus-visible {
+  outline: 2px solid var(--color-lavender);
+  outline-offset: 2px;
+}
+.rsvp-stepper__value {
+  min-width: 2.25rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.headcount-total {
+  margin-top: 0.15rem;
+  font-size: 0.9rem;
+  color: var(--color-ink);
+}
+.headcount-total strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 380px) {
+  .rsvp-stepper__btn {
+    width: 34px;
+    height: 34px;
+  }
 }
 .form-status {
   min-height: 1.2em;
@@ -1870,118 +2230,649 @@
   .fg-btn--glow::before {
     animation: none !important;
   }
-  .venue-scene__image,
+  .venue-scene__wash,
   .venue-scene::before,
-  .venue-scene__inner::before {
+  .venue-path__stone {
     animation: none !important;
-    transform: none;
+  }
+  /* The stones are faded in by their animation, so make them visible outright. */
+  .venue-path__stone {
+    opacity: 1;
   }
   .reveal {
     opacity: 1;
     transform: none;
     filter: none;
   }
+  /* Gift rows are hidden until their scene activates; show them outright here. */
+  .gift-item,
+  .gift-scene.is-active .gift-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
   .floating-butterfly {
     display: none;
   }
 }
 
-/* Centered glass location card for the venue scene */
-.venue-card {
+/* ── Venue nameplate ─────────────────────────────────────────────
+ * An editorial stationery plate rather than a "glass card": pearl paper with a
+ * hairline gold frame inset, no heavy blur or drop shadow. The venue name is
+ * the only large type on the page at this point, with Bantayan Hall framed by
+ * two gold rules so it reads as the specific destination.
+ */
+.venue-plate {
   position: relative;
-  overflow: hidden;
-  isolation: isolate;
   width: 100%;
-  max-width: 460px;
-  margin: 0 auto;
-  padding: clamp(2rem, 6vw, 2.6rem) clamp(1.4rem, 6vw, 2.4rem) clamp(1.75rem, 5vw, 2.2rem);
+  max-width: 520px;
+  margin: clamp(1.1rem, 3vw, 1.5rem) auto 0;
+  padding: clamp(2rem, 5.5vw, 2.6rem) clamp(1.4rem, 5.5vw, 2.4rem) clamp(1.9rem, 5vw, 2.3rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  border-radius: clamp(26px, 7vw, 36px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.72), rgba(255, 250, 254, 0.42));
-  -webkit-backdrop-filter: blur(14px) saturate(1.25);
-  backdrop-filter: blur(14px) saturate(1.25);
-  box-shadow:
-    0 26px 50px -22px rgba(105, 68, 116, 0.34),
-    0 3px 12px rgba(105, 68, 116, 0.08),
-    0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(255, 253, 251, 0.94), rgba(255, 249, 246, 0.86));
+  box-shadow: 0 20px 44px -26px rgba(105, 68, 116, 0.4);
 }
-/* faint inner sheen so the card reads as soft glass */
-.venue-card::before {
+
+/* Fine double gold frame, inset — the "printed plate" cue. Kept subtle but
+ * legible: a slightly stronger outer rule with a hairline echo inside. */
+.venue-plate__frame {
+  position: absolute;
+  inset: 7px;
+  border: 1px solid color-mix(in oklab, var(--color-gold) 60%, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.venue-plate__frame::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in oklab, var(--color-gold) 30%, transparent);
+  border-radius: 1px;
+}
+
+.venue-plate__name {
+  position: relative;
+  margin: 0;
+  color: #49304f;
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 5.6vw, 2.45rem);
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: 0.005em;
+  text-wrap: balance;
+}
+
+/*
+ * Bantayan Hall — the specific destination, so it outranks the area line and
+ * holds its own against the venue name.
+ *
+ * Tracking compensation: the hall name is a touch heavier and warmer than the
+ * name above it, framed by two gold rules so the eye lands here first. The
+ * uppercase area line below is inset-snugged (see .venue-plate__area) to undo
+ * the trailing letterspace, which otherwise pushes it optically off-centre.
+ */
+.venue-plate__hall {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.7rem, 2.5vw, 1.1rem);
+  width: 100%;
+  margin: clamp(1.15rem, 3.2vw, 1.5rem) 0 0;
+}
+.venue-plate__hall-rule {
+  flex: 0 1 clamp(22px, 12vw, 62px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  opacity: 0.85;
+}
+.venue-plate__hall-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 4.9vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: 0.02em;
+  color: color-mix(in oklab, var(--color-gold) 55%, #4b2f52);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.venue-plate__area {
+  position: relative;
+  margin: clamp(0.7rem, 2.2vw, 0.95rem) 0 0;
+  color: #7b5a83;
+  font-size: clamp(0.78rem, 2.5vw, 0.88rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  /* Trailing letterspace adds a phantom gap after the final letter, which
+   * pushes centred uppercase type optically left of true centre. Pulling the
+   * inline start back by the same amount restores optical centring. */
+  padding-inline-start: 0.18em;
+}
+
+/* ── "Open in Map" — a premium invitation action ─────────────────
+ * Outlined champagne-gold pill with a fine location mark. The fill sweeps in
+ * from the bottom on hover/focus so it feels considered rather than a default
+ * web button. Deliberately carries no map-vendor branding.
+ */
+.venue-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  /* Comfortable touch target on mobile. */
+  min-height: 50px;
+  margin: clamp(1.6rem, 4.4vw, 2rem) 0 0;
+  padding: 0.85rem clamp(1.5rem, 5vw, 2.1rem);
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--color-gold) 62%, transparent);
+  background: transparent;
+  color: color-mix(in oklab, var(--color-gold) 52%, #59385f);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    border-color 380ms ease,
+    color 380ms ease,
+    box-shadow 380ms ease,
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The fill that sweeps up from the base on hover. */
+.venue-action::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: radial-gradient(120% 88% at 50% -12%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 62%);
+  border-radius: inherit;
+  background: linear-gradient(135deg, #fbe8f2, #f3ecff 52%, #fdf3dc);
+  transform: translateY(101%);
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.venue-card__icon {
+.venue-action__icon {
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
-  margin-bottom: 0.35rem;
-  border-radius: 999px;
-  color: #7d4f9c;
-  background: linear-gradient(150deg, #fff, #fbe4f1 55%, #e6dbff);
-  box-shadow:
-    0 10px 22px -12px rgba(105, 68, 116, 0.55),
-    0 0 0 1px rgba(255, 255, 255, 0.85) inset;
+  flex: 0 0 auto;
 }
-.venue-card__icon svg {
-  width: 24px;
-  height: 24px;
+.venue-action__icon svg {
+  width: 17px;
+  height: 17px;
 }
 
-.venue-card__name {
-  margin: 0;
-  color: #49304f;
+.venue-action__label {
+  display: block;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .venue-action:hover,
+  .venue-action:focus-visible {
+    color: #4b2f52;
+    border-color: color-mix(in oklab, var(--color-gold) 92%, transparent);
+    box-shadow: 0 12px 26px -14px rgba(105, 68, 116, 0.5);
+    transform: translateY(-2px);
+  }
+  .venue-action:hover::before,
+  .venue-action:focus-visible::before {
+    transform: translateY(0);
+  }
+}
+/* Touch devices get the pressed state instead of a hover that can stick. */
+.venue-action:active {
+  transform: translateY(0) scale(0.985);
+}
+
+/*
+ * Mobile — the plate runs full width, the hall rules shorten so the name never
+ * fights them for space, and the action becomes full-width for an easy tap.
+ */
+@media (max-width: 480px) {
+  .venue-plate {
+    padding: 1.8rem 1.25rem 1.85rem;
+  }
+  .venue-plate__hall {
+    gap: 0.65rem;
+  }
+  .venue-plate__hall-name {
+    letter-spacing: 0.02em;
+  }
+  .venue-action {
+    width: 100%;
+    padding-inline: 1.1rem;
+    letter-spacing: 0.13em;
+  }
+}
+
+/* Narrow phones — the fronds would crowd the plate, so fade them further. */
+@media (max-width: 380px) {
+  .venue-scene__frond {
+    opacity: 0.18;
+  }
+}
+
+/* ── Gift guide ─────────────────────────────────────────────── */
+/* ── Colour palette ─────────────────────────────────────────── */
+.palette-block {
+  width: min(92%, 1040px);
+  margin: clamp(2.4rem, 6vw, 3.4rem) auto 0;
+  text-align: center;
+}
+
+.palette-block__heading h3 {
   font-family: var(--font-display);
-  font-size: clamp(1.65rem, 5.4vw, 2.15rem);
+  font-size: clamp(1.4rem, 4.6vw, 1.85rem);
   font-weight: 500;
-  line-height: 1.16;
-  letter-spacing: 0.01em;
-  text-wrap: balance;
+  color: #49304f;
+  margin: 0.3rem 0 0;
 }
 
-.venue-card__city {
-  margin: 0.5rem 0 0;
-  color: #7b5a83;
-  font-size: 0.94rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 0.7rem;
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.palette-swatch {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 0.85rem 0.5rem;
+  border-radius: 16px;
+  background: #fffdfb;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 10%, transparent);
+}
+
+.palette-swatch__chip {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(72, 46, 70, 0.12);
+}
+
+.palette-swatch strong {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #4a3350;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.palette-swatch__hex {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: #8b6f92;
   text-transform: uppercase;
 }
 
-.venue-card__divider {
-  width: min(150px, 62%);
-  height: 1px;
-  margin: clamp(1.4rem, 4.6vw, 1.8rem) 0;
-  background: linear-gradient(90deg, rgba(157, 120, 199, 0), rgba(157, 120, 199, 0.5), rgba(157, 120, 199, 0));
+/* ── Guest guide — Gentle Reminders + Program Flow as ONE spread ───
+ * Art direction: the two lists are treated as the two facing pages of a single
+ * card.
+ *
+ *  - One shared opener carries the section title, so the spread reads as one
+ *    page rather than two stacked sections.
+ *  - Each list is headed by a thin guided label (hairline + small caps), which
+ *    is the only ornament. That gives the panels a formal, printed feel without
+ *    adding a single decorative glyph.
+ *  - On desktop a vertical hairline divides the two panels, like a gutter.
+ *
+ * Palette stays disciplined: cream ground, ink type, gold as the lone accent
+ * (rules, numerals, the divider). No cards, no shadows, no boxes.
+ */
+.guest-guide {
+  position: relative;
+  padding: clamp(4.5rem, 10vw, 7.5rem) 1.25rem;
+  background: var(--color-cream);
 }
 
-.venue-card__button {
-  white-space: nowrap;
-  max-width: 100%;
+.guest-guide__inner {
+  width: min(94%, 1080px);
+  margin: 0 auto;
+}
+
+/* Shared opener. */
+.guest-guide__opener {
+  width: min(100%, 640px);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.guest-guide__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4.6vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.18;
+  color: #49304f;
+  text-wrap: balance;
+}
+
+.guest-guide__lead {
+  margin: 0.95rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.8vw, 1.22rem);
+  font-style: italic;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--color-lavender) 52%, #5b3a62);
+}
+
+.guest-guide__eyebrow {
+  margin-bottom: 0.9rem;
+  color: color-mix(in oklab, var(--color-lavender) 62%, var(--color-ink));
+  letter-spacing: 0.3em;
+  font-size: 0.66rem;
+}
+
+.guest-guide__rule {
+  display: block;
+  width: 54px;
+  height: 1px;
+  margin: clamp(1.3rem, 3.5vw, 1.7rem) auto 0;
+  background: var(--color-gold);
+  opacity: 0.75;
+}
+
+/*
+ * The spread. Two equal panels with a generous gutter; the divider hairline is
+ * drawn on the spread's centre line so it is exactly midway between them.
+ *
+ * `align-items: start` keeps both panels pinned to the shared top edge — the
+ * reminders list is the taller of the two, so without it the shorter programme
+ * panel would stretch and its rows would drift apart.
+ */
+.guest-guide__spread {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 0 clamp(2.5rem, 6vw, 5rem);
+  margin: clamp(2.6rem, 6vw, 3.4rem) auto 0;
+}
+
+/* Gutter rule between the facing panels. The spread's own height equals its
+ * taller column, so spanning `top: 0; bottom: 0` traces exactly the panel row
+ * and never crosses the opener's rule above. */
+.guest-guide__spread::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in oklab, var(--color-ink) 13%, transparent) 8%,
+    color-mix(in oklab, var(--color-ink) 13%, transparent) 92%,
+    transparent
+  );
+}
+
+.guide-panel {
+  min-width: 0;
+}
+
+/* Panel label: a small-caps wordmark with a hairline running off to its right.
+ * This is the ONLY heading each panel carries, so each list is named once. */
+.guide-panel__label {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  /* Fixed height keeps both panels' headers on the same baseline, so the two
+   * lists start at exactly the same y despite different label lengths. */
+  min-height: 2.6rem;
+  margin: 0 0 1.35rem;
+}
+.guide-panel__label::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: color-mix(in oklab, var(--color-gold) 55%, transparent);
+}
+
+/* The programme side puts its label and time on one row. */
+.guide-panel__label-text {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-lavender) 78%, var(--color-ink));
+}
+
+/* On the programme side the label and the time share a row, so the label
+ * stretches and the time holds its own width. */
+.guide-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  /* Matches the left panel's label height so both lists start on one baseline. */
+  min-height: 2.6rem;
+  margin-bottom: 1.35rem;
+}
+.guide-panel__head .guide-panel__label {
+  flex: 1 1 auto;
+  /* The head supplies the height and spacing. */
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+.guide-panel__titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* "The Celebration" — the programme's overline, kept quieter than its title. */
+.guide-panel__overline {
+  margin: 0 0 0.35rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  color: color-mix(in oklab, var(--color-gold) 82%, var(--color-ink));
+}
+
+.program__time {
+  margin: 0;
+  flex: 0 0 auto;
+  align-self: flex-end;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.6vw, 1.15rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--color-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Reminders list ─────────────────────────────────────────────
+ * Emoji-free by design. Each row is marked by a small CSS ornament — a gold
+ * ring with a soft blush core — and carries a very faint paper tint so the
+ * list reads as a set of cared-for notes rather than a plain bullet list.
+ * Rows alternate their tint so the vertical rhythm is easy to scan.
+ */
+.reminders__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reminder {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0 0.9rem;
+  padding: 0.95rem 0.95rem 0;
+  color: #4a3350;
+  font-size: clamp(0.92rem, 2.2vw, 0.98rem);
+  line-height: 1.62;
+  text-wrap: pretty;
+  border-radius: 2px;
+  /* Barely-there band so the rows read as slips of paper, not a raw list. */
+  background: linear-gradient(
+    90deg,
+    rgba(255, 253, 251, 0) 0%,
+    rgba(255, 249, 246, 0.72) 14%,
+    rgba(255, 249, 246, 0.72) 100%
+  );
+}
+/* Alternating rows take a cooler tint, so the eye can track the list. */
+.reminder:nth-child(even) {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 253, 251, 0) 0%,
+    rgba(250, 246, 255, 0.66) 14%,
+    rgba(250, 246, 255, 0.66) 100%
+  );
+}
+
+/* The ornament: a gold ring with a blush core, optically on the first line. */
+.reminder__marker {
+  position: relative;
+  display: block;
+  width: 9px;
+  height: 9px;
+  /* Push down to sit on the text's first-line centre. */
+  margin-top: 0.52em;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--color-gold) 85%, transparent);
+  background: color-mix(in oklab, var(--color-blush) 52%, #fffdfb);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-gold) 10%, transparent);
+}
+
+.reminder__text {
+  display: block;
+}
+
+/* ── Programme list ─────────────────────────────────────────────
+ * Unnumbered by request. With the numerals gone the list is carried by a small
+ * gold tick per row and a hairline between entries — the timeline rule that
+ * used to run beside the numbers is no longer needed and has been removed.
+ *
+ * Layout note: `.program__label` is the row's ONLY child, so the row is a flex
+ * row and the label takes the full remaining width. A two-column grid here (the
+ * shape used when the numeral had its own track) would confine the label to the
+ * narrow track and wrap it one word per line.
+ */
+.program__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.program__item {
+  display: flex;
+  align-items: baseline;
+  padding: 0.62rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--color-ink) 8%, transparent);
+}
+/* The final entry closes the list. */
+.program__item:last-child {
+  border-bottom: 1px solid color-mix(in oklab, var(--color-ink) 8%, transparent);
+}
+
+/* A fine gold tick in place of the old number, sitting inline before the text. */
+.program__label::before {
+  content: "";
+  display: inline-block;
+  width: 0.85rem;
+  height: 1px;
+  margin-right: 0.9rem;
+  vertical-align: 0.3em;
+  background: color-mix(in oklab, var(--color-gold) 85%, transparent);
+}
+
+.program__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: #46304d;
+  font-size: clamp(0.95rem, 2.3vw, 1.03rem);
+  line-height: 1.5;
+}
+
+/*
+ * Tablet — the spread is getting tight for two columns of running text, so the
+ * panels stack and the divider becomes a horizontal break instead.
+ */
+@media (max-width: 860px) {
+  .guest-guide__spread {
+    grid-template-columns: 1fr;
+    gap: 2.6rem;
+  }
+
+  .guest-guide__spread::before {
+    /* Rotate the divider into a horizontal rule between the stacked panels. */
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: auto;
+    height: 1px;
+    margin-top: -1.3rem;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--color-ink) 13%, transparent) 12%,
+      color-mix(in oklab, var(--color-ink) 13%, transparent) 88%,
+      transparent
+    );
+    /* Position it in the gap between the two panels. */
+    transform: translateY(-1.3rem);
+  }
+
+  .guide-panel--program {
+    /* The horizontal divider needs somewhere to sit above this panel. */
+    position: relative;
+  }
+}
+
+/* Mobile — tighten the gutters and the numeral column. */
+@media (max-width: 560px) {
+  .guest-guide__spread {
+    gap: 2.2rem;
+  }
+
+  .reminder {
+    grid-template-columns: 1.35rem minmax(0, 1fr);
+    gap: 0 0.75rem;
+    /* Keep the horizontal padding so the row's paper band survives. */
+    padding: 0.9rem 0.8rem 0;
+  }
+
+  .program__item {
+    padding: 0.6rem 0;
+  }
+  .program__label::before {
+    width: 0.7rem;
+    margin-right: 0.75rem;
+  }
+
+  .guide-panel__label-text {
+    letter-spacing: 0.2em;
+  }
 }
 
 @media (max-width: 420px) {
-  .venue-card {
-    max-width: 100%;
-    padding: 1.9rem 1.35rem 1.7rem;
-    border-radius: 26px;
-  }
-  .venue-card__city {
-    font-size: 0.86rem;
-    letter-spacing: 0.12em;
-  }
-  .venue-card__button {
-    width: 100%;
-    padding-inline: 1.1rem;
+  .palette-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-
-

@@ -11,6 +11,7 @@ import {
   Calendar,
   Loader2,
   LogOut,
+  Pencil,
 } from "lucide-react";
 import { event } from "@/lib/event";
 import { saveTimerSettings, type TimerSettings } from "@/lib/countdown-settings";
@@ -21,6 +22,8 @@ import {
   listRsvps,
   loadHostTimerSettings,
   saveHostTimerSettings,
+  updateRsvpRecord,
+  MAX_HEADCOUNT,
   type HostRsvp,
 } from "@/lib/host-data";
 
@@ -119,6 +122,8 @@ function HostDesk() {
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
+  // The reply currently open in the edit dialog (null = closed).
+  const [editing, setEditing] = useState<HostRsvp | null>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -159,8 +164,15 @@ function HostDesk() {
     window.location.href = "/login";
   };
 
+  // Headcount totals come from the loaded rows, never from a stored total:
+  // `adults`/`kids` are summed across ATTENDING replies only, and "Guests coming"
+  // is their sum. Declined replies stay in Replies and are excluded here.
   const attending = rsvps.filter((r) => r.attendance === "attending");
-  const heads = attending.reduce((sum, r) => sum + r.attendees, 0);
+  const totals = attending.reduce(
+    (sum, r) => ({ adults: sum.adults + r.adults, kids: sum.kids + r.kids }),
+    { adults: 0, kids: 0 },
+  );
+  const guestsComing = totals.adults + totals.kids;
 
   const handleDeleteRsvp = async (id: string, name: string) => {
     if (!window.confirm(`Delete reply from ${name}?`)) return;
@@ -232,6 +244,25 @@ function HostDesk() {
     }
   };
 
+  /**
+   * Persist an edited reply, then re-read the inbox so every count on the desk
+   * (Attending parties, Adults, Kids, Guests coming) reflects the new values.
+   * Throws on failure so the dialog can keep the host's unsaved edits on screen.
+   */
+  const handleSaveRsvp = async (updated: {
+    id: string;
+    guestName: string;
+    attendance: "attending" | "not-attending";
+    adults: number;
+    kids: number;
+    contact: string;
+    message: string;
+  }) => {
+    await updateRsvpRecord({ data: updated });
+    await refresh();
+    showFeedback(`Updated reply from ${updated.guestName}.`);
+  };
+
   const currentDisplayDate = timerSettings.customDateISO
     ? new Date(timerSettings.customDateISO).toLocaleString()
     : `${event.dateLabel} · ${event.timeLabel}`;
@@ -280,7 +311,7 @@ function HostDesk() {
       <div className="mb-8 grid grid-cols-3 gap-3">
         <Stat label="Replies" value={String(rsvps.length)} />
         <Stat label="Attending parties" value={String(attending.length)} />
-        <Stat label="Guests coming" value={String(heads)} />
+        <Stat label="Guests coming" value={String(guestsComing)} detail={`${totals.adults} Adults · ${totals.kids} Kids`} />
       </div>
 
       {/* Quick Actions */}
@@ -431,6 +462,16 @@ function HostDesk() {
                     </span>
                     <button
                       type="button"
+                      aria-label={`Edit RSVP from ${r.guestName}`}
+                      onClick={() => setEditing(r)}
+                      className="flex items-center gap-1 rounded-lg border border-stone-200 bg-white px-2.5 py-1 text-xs font-semibold text-ink hover:bg-stone-50 transition cursor-pointer"
+                      title="Edit this reply"
+                    >
+                      <Pencil className="h-3.5 w-3.5 text-ink/60" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      type="button"
                       aria-label={`Delete RSVP from ${r.guestName}`}
                       onClick={() => void handleDeleteRsvp(r.id, r.guestName)}
                       className="flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition cursor-pointer"
@@ -441,6 +482,21 @@ function HostDesk() {
                     </button>
                   </div>
                 </div>
+                {/* Headcount breakdown for an attending party. Declined replies
+                    carry no headcount, so they show only the status pill. */}
+                {r.attendance === "attending" && (
+                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                    <span className="text-ink/70">
+                      Adults: <strong className="tabular-nums text-ink">{r.adults}</strong>
+                    </span>
+                    <span className="text-ink/70">
+                      Kids: <strong className="tabular-nums text-ink">{r.kids}</strong>
+                    </span>
+                    <span className="text-ink/70">
+                      Total: <strong className="tabular-nums text-ink">{r.attendees}</strong>
+                    </span>
+                  </div>
+                )}
                 <p className="mt-1 text-sm text-ink/70">Contact: {r.contact || "—"}</p>
                 {r.message ? (
                   <p className="mt-2 rounded-xl bg-stone-50 p-2.5 text-sm text-ink/90 italic">
@@ -453,6 +509,14 @@ function HostDesk() {
           </ul>
         )}
       </section>
+
+      {editing && (
+        <EditRsvpDialog
+          record={editing}
+          onClose={() => setEditing(null)}
+          onSave={handleSaveRsvp}
+        />
+      )}
 
       {/* Guide Section */}
       <section className="mt-12 border-t border-stone-200 pt-8">
@@ -472,13 +536,296 @@ function HostDesk() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return (
     <div className="rounded-2xl bg-white p-4 text-center shadow-sm border border-stone-100">
       <strong className="block text-3xl tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
         {value}
       </strong>
       <span className="text-xs font-extrabold tracking-widest text-lavender uppercase">{label}</span>
+      {detail ? (
+        <span className="mt-1 block text-[0.7rem] font-semibold tabular-nums text-ink/60">
+          {detail}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * The host's full-record editor.
+ *
+ * Opened from a reply in the inbox. It edits every field the guest supplied plus
+ * the attendance status and the Adults/Kids split, and always sends the COMPLETE
+ * record on save — so a field the host never touched keeps its loaded value
+ * instead of being blanked.
+ *
+ * "Total guests" is shown read-only and is always `adults + kids`; nobody types
+ * it, and the server derives the stored `attendees` the same way.
+ *
+ * On failure the dialog stays open with the host's edits intact and shows the
+ * error, rather than closing as though the save had succeeded.
+ */
+function EditRsvpDialog({
+  record,
+  onClose,
+  onSave,
+}: {
+  record: HostRsvp;
+  onClose: () => void;
+  onSave: (next: {
+    id: string;
+    guestName: string;
+    attendance: "attending" | "not-attending";
+    adults: number;
+    kids: number;
+    contact: string;
+    message: string;
+  }) => Promise<void>;
+}) {
+  const [guestName, setGuestName] = useState(record.guestName);
+  const [attendance, setAttendance] = useState<"attending" | "not-attending">(record.attendance);
+  const [adults, setAdults] = useState(record.adults);
+  const [kids, setKids] = useState(record.kids);
+  const [contact, setContact] = useState(record.contact);
+  const [message, setMessage] = useState(record.message);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isAttending = attendance === "attending";
+  const total = adults + kids;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (saving) return;
+    // Same rules as the guest form: a real name, a valid number, and at least one
+    // person on an attending reply. A declined reply stores no headcount.
+    const problems: string[] = [];
+    if (guestName.trim().length < 2) problems.push("Please keep a guest name on the reply.");
+    if (contact.replace(/\D/g, "").length < 7) problems.push("Please enter a valid contact number.");
+    if (isAttending && total < 1) problems.push("An attending reply needs at least one adult or kid.");
+    if (problems.length) {
+      setError(problems[0]);
+      return;
+    }
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave({
+        id: record.id,
+        guestName: guestName.trim(),
+        attendance,
+        adults: isAttending ? adults : 0,
+        kids: isAttending ? kids : 0,
+        contact: contact.trim(),
+        message: message.trim(),
+      });
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : "Could not save the reply.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-ink/40 px-4 py-8"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="editRsvpTitle"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !saving) onClose();
+      }}
+    >
+      <form
+        onSubmit={(e) => void handleSubmit(e)}
+        className="w-full max-w-lg rounded-2xl border-stone-100 bg-white p-6 shadow-lg"
+      >
+        <h2
+          className="text-2xl"
+          id="editRsvpTitle"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Edit RSVP
+        </h2>
+        <p className="mt-1 mb-5 text-sm text-ink/70">
+          Reply received {new Date(record.createdAt).toLocaleString()}
+        </p>
+
+        <fieldset className="mb-5 grid gap-3" disabled={saving}>
+          <legend className="mb-2 text-xs font-extrabold tracking-widest text-lavender uppercase">
+            Guest Information
+          </legend>
+          <div className="field">
+            <label htmlFor="editGuestName">Guest Name</label>
+            <input
+              id="editGuestName"
+              type="text"
+              value={guestName}
+              maxLength={100}
+              onChange={(e) => setGuestName(e.target.value)}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="editContact">Contact Number</label>
+            <input
+              id="editContact"
+              type="tel"
+              value={contact}
+              maxLength={20}
+              onChange={(e) => setContact(e.target.value)}
+            />
+          </div>
+        </fieldset>
+
+        <fieldset className="mb-5" disabled={saving}>
+          <legend className="mb-2 text-xs font-extrabold tracking-widest text-lavender uppercase">
+            Attendance
+          </legend>
+          <div className="flex flex-wrap gap-2">
+            <label
+              className={`cursor-pointer rounded-xl border px-3.5 py-2 text-sm font-semibold transition ${
+                isAttending
+                  ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                  : "border-stone-200 bg-white text-ink hover:bg-stone-50"
+              }`}
+            >
+              <input
+                className="mr-2"
+                type="radio"
+                name="editAttendance"
+                value="attending"
+                checked={isAttending}
+                onChange={() => setAttendance("attending")}
+              />
+              Attending
+            </label>
+            <label
+              className={`cursor-pointer rounded-xl border px-3.5 py-2 text-sm font-semibold transition ${
+                !isAttending
+                  ? "border-purple-300 bg-purple-50 text-purple-800"
+                  : "border-stone-200 bg-white text-ink hover:bg-stone-50"
+              }`}
+            >
+              <input
+                className="mr-2"
+                type="radio"
+                name="editAttendance"
+                value="not-attending"
+                checked={!isAttending}
+                onChange={() => setAttendance("not-attending")}
+              />
+              Not attending
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset className="mb-5" disabled={saving || !isAttending}>
+          <legend className="mb-2 text-xs font-extrabold tracking-widest text-lavender uppercase">
+            Headcount
+          </legend>
+          <div className="grid gap-2.5">
+            <HeadcountRow label="Adults" value={adults} onChange={setAdults} />
+            <HeadcountRow label="Kids" value={kids} onChange={setKids} />
+            <p className="rounded-xl bg-stone-50 px-3.5 py-2 text-sm text-ink">
+              Total guests:{" "}
+              <strong
+                className="tabular-nums"
+                style={{ fontFamily: "var(--font-display)", fontSize: "1.2rem" }}
+              >
+                {isAttending ? total : 0}
+              </strong>
+            </p>
+            {!isAttending && (
+              <p className="text-xs text-ink/60">
+                A reply that is not attending keeps its record but counts as no guests.
+              </p>
+            )}
+          </div>
+        </fieldset>
+
+        <div className="field mb-5">
+          <label htmlFor="editMessage">Message for Iria</label>
+          <textarea
+            id="editMessage"
+            rows={3}
+            maxLength={500}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+        </div>
+
+        {error && (
+          <p className="mb-4 rounded-xl border-rose-200 bg-rose-50 px-3.5 py-2.5 text-sm font-medium text-rose-800">
+            {error}
+          </p>
+        )}
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="submit"
+            className="fg-btn fg-btn--solid flex items-center gap-2"
+            disabled={saving}
+          >
+            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+            <span>{saving ? "Saving…" : "Save Changes"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={saving}
+            className="rounded-xl border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-ink hover:bg-stone-50 transition cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/** One `− 0 +` headcount row in the edit dialog. Never goes below 0 or above the cap. */
+function HeadcountRow({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (next: number) => void;
+}) {
+  const set = (next: number) => onChange(Math.min(Math.max(Math.trunc(next), 0), MAX_HEADCOUNT));
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-xl border-stone-200 bg-white px-3 py-1.5">
+      <span className="text-sm font-semibold text-ink">{label}</span>
+      <div className="flex items-center gap-1.5">
+        <button
+          type="button"
+          aria-label={`Remove one ${label.toLowerCase()}`}
+          disabled={value <= 0}
+          onClick={() => set(value - 1)}
+          className="grid h-9 w-9 place-items-center rounded-lg border-stone-200 bg-stone-50 text-lg font-bold text-ink hover:bg-stone-100 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          −
+        </button>
+        <output
+          className="min-w-9 text-center tabular-nums"
+          style={{ fontFamily: "var(--font-display)", fontSize: "1.4rem" }}
+          aria-live="polite"
+        >
+          {value}
+        </output>
+        <button
+          type="button"
+          aria-label={`Add one ${label.toLowerCase()}`}
+          disabled={value >= MAX_HEADCOUNT}
+          onClick={() => set(value + 1)}
+          className="grid h-9 w-9 place-items-center rounded-lg border-stone-200 bg-stone-50 text-lg font-bold text-ink hover:bg-stone-100 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          +
+        </button>
+      </div>
     </div>
   );
 }
