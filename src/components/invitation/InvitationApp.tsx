@@ -271,7 +271,10 @@ export function InvitationApp() {
   // back out of state on submit and sent to the server as-is.
   const [adults, setAdults] = useState(0);
   const [kids, setKids] = useState(0);
-  const [attending, setAttending] = useState(false);
+  // "Joyfully attending" is the pre-selected reply, so the Adult/Kid headcount
+  // is visible from the first render; the guest can still switch to
+  // "Sending fairy wishes", which hides the headcount again.
+  const [attending, setAttending] = useState(true);
   const audio = useRef<ReturnType<typeof createGardenAudio> | null>(null);
   const glitterRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -1175,6 +1178,7 @@ export function InvitationApp() {
             <div className="final-scene__copy reveal">
               <p className="eyebrow">{event.closingEyebrow}</p>
               <h2 id="finalTitle">{event.closingTitle}</h2>
+              <p className="final-scene__hashtag">{event.closingHashtag}</p>
               <p>{event.closingLead}</p>
               <strong>
                 {event.dateLabel} · {event.timeLabel}

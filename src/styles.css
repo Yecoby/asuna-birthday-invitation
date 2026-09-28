@@ -1951,6 +1951,18 @@
   padding: 2rem 1rem;
   text-shadow: 0 4px 24px rgba(10, 6, 18, 0.5);
 }
+/* Subtle keepsake line under the closing heading. The hashtag has no spaces, so
+   `overflow-wrap` lets it break rather than push the page sideways on phones. */
+.final-scene__hashtag {
+  margin: 0 0 1.1rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.98rem, 3.6vw, 1.4rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.35;
+  color: var(--color-gold-soft);
+  overflow-wrap: anywhere;
+}
 .final-lanterns {
   position: absolute;
   inset: 0;

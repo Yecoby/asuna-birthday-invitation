@@ -177,6 +177,7 @@ export const event = {
 
   closingEyebrow: "With Love from Our Garden",
   closingTitle: "Thank You for Joining the Magic",
+  closingHashtag: "#OurLittleButterflyIriaTurnsOne",
   closingLead:
     "Thank you for walking Iria through her first year of wonder. We cannot wait to make new memories with you.",
 
